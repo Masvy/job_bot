@@ -5,6 +5,8 @@ from environs import Env
 from aiogram import Bot, Dispatcher
 import betterlogging as bl
 
+from handlers import start
+
 
 class ErrorFilter(logging.Filter):
     def filter(self, record):
@@ -42,6 +44,8 @@ async def main():
     bot: Bot = Bot(token=env('BOT_TOKEN'),
                    parse_mode='HTML')
     dp: Dispatcher = Dispatcher()
+
+    dp.include_router(start.start_router)
 
     await bot.delete_webhook(drop_pending_updates=True)
 
