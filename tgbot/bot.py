@@ -6,7 +6,7 @@ from sqlalchemy import URL
 import betterlogging as bl
 from aiogram import Bot, Dispatcher
 
-from handlers import start
+from handlers import routers_list
 from database.create_table import BaseModel
 from middlewares.check_register import RegisterCheck
 from database.engine import create_async_engine, get_session_maker, \
@@ -53,7 +53,7 @@ async def main():
     dp.message.middleware(RegisterCheck())
     dp.callback_query.middleware(RegisterCheck())
 
-    dp.include_router(start.start_router)
+    dp.include_routers(*routers_list)
 
     postgres_url = URL.create(
         'postgresql+asyncpg',
