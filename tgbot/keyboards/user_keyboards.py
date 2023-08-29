@@ -23,13 +23,24 @@ back_menu_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
+consent_questionnaire_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='agreement_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='refusal_pressed')
+        ]
+    ]
+)
+
 yes_or_no_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=KEYBOARDS['yes'],
                                  callback_data='yes_pressed'),
             InlineKeyboardButton(text=KEYBOARDS['no'],
-                                 callback_data='no_pressed')
+                                 callback_data='refusal_pressed')
         ]
     ]
 )
