@@ -6,10 +6,10 @@ from lexiocon.user_lexicon import KEYBOARDS
 main_menu_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text=KEYBOARDS['vacancies'],
-                                 callback_data='vacancies_pressed'),
             InlineKeyboardButton(text=KEYBOARDS['about_company'],
                                  callback_data='company_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['vacancies'],
+                                 callback_data='vacancies_pressed'),
             InlineKeyboardButton(text=KEYBOARDS['employment'],
                                  callback_data='employment_pressed')
         ]
