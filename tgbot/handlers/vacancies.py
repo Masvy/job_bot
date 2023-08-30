@@ -18,4 +18,5 @@ async def show_vacancies(callback: CallbackQuery,
         await callback.message.edit_text(text=USERS['no_access'],
                                          reply_markup=back_menu_kb)
     else:
-        await callback.message.edit_text(text='Вакансий на данный момент нет')
+        await callback.message.edit_text(text='Вакансий на данный момент нет',
+                                         reply_markup=back_menu_kb)
