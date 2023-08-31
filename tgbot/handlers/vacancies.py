@@ -3,7 +3,7 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.orm import sessionmaker
 
 from lexiocon.user_lexicon import USERS
-from database.users import read_status
+from database.users import read_access
 from keyboards.user_keyboards import back_menu_kb
 
 vacanties_router: Router = Router()
@@ -12,9 +12,9 @@ vacanties_router: Router = Router()
 @vacanties_router.callback_query(F.data == 'vacancies_pressed')
 async def show_vacancies(callback: CallbackQuery,
                          session_maker: sessionmaker):
-    status = await read_status(callback.from_user.id,
+    access = await read_access(callback.from_user.id,
                                session_maker=session_maker)
-    if status == 0:
+    if access == 0:
         await callback.message.edit_text(text=USERS['no_access'],
                                          reply_markup=back_menu_kb)
     else:
