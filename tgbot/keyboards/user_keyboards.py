@@ -5,15 +5,13 @@ from lexiocon.user_lexicon import KEYBOARDS
 # Создал объекты клавиатуры
 main_menu_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['about_company'],
-                                 callback_data='company_pressed'),
-            InlineKeyboardButton(text=KEYBOARDS['vacancies'],
-                                 callback_data='vacancies_pressed'),
-            InlineKeyboardButton(text=KEYBOARDS['employment'],
-                                 callback_data='employment_pressed')
+        [InlineKeyboardButton(text=KEYBOARDS['about_company'],
+                              callback_data='company_pressed')],
+        [InlineKeyboardButton(text=KEYBOARDS['vacancies'],
+                              callback_data='vacancies_pressed')],
+        [InlineKeyboardButton(text=KEYBOARDS['employment'],
+                              callback_data='employment_pressed')]
         ]
-    ]
 )
 
 back_menu_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
