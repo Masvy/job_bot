@@ -90,7 +90,7 @@ async def check_result(message: Message, state: FSMContext,
 
 @employment_router.callback_query(F.data == 'all_right_pressed')
 async def complete_questionnaire(callback: CallbackQuery,
-                          session_maker: sessionmaker):
+                                 session_maker: sessionmaker):
     await update_status(callback.from_user.id, 'Устраивает',
                         session_maker=session_maker)
     await callback.message.edit_text(USERS['end_questionnaire'],
