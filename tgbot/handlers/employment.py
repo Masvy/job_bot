@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, or_f
 from aiogram.fsm.state import default_state
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.orm import sessionmaker
@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from lexiocon.user_lexicon import USERS
 from states.users_states import Questionnaire
 from keyboards.user_keyboards import back_menu_kb, consent_questionnaire_kb, \
-                                     yes_or_no_kb
+                                     yes_or_no_kb, true_false_kb
 from database.users import update_name, update_city, update_vacancies, \
                            update_employment, update_schedule, \
                            update_status, read_data
@@ -28,7 +28,9 @@ async def warn_user(callback: CallbackQuery):
                                      reply_markup=yes_or_no_kb)
 
 
-@employment_router.callback_query(F.data == 'yes_pressed', StateFilter(default_state))
+@employment_router.callback_query(or_f(F.data == 'yes_pressed',
+                                       F.data == 'correct_pressed'),
+                                       StateFilter(default_state))
 async def request_name(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text=USERS['name_request'])
     await state.set_state(Questionnaire.name)
@@ -82,8 +84,17 @@ async def check_result(message: Message, state: FSMContext,
                          f'{data["vacancies"]}\nВид трудоустройства: '
                          f'{data["employment"]}\nРасписание: '
                          f'{data["schedule"]}',
-                         reply_markup=back_menu_kb)
+                         reply_markup=true_false_kb)
     await state.clear()
+
+
+@employment_router.callback_query(F.data == 'all_right_pressed')
+async def complete_questionnaire(callback: CallbackQuery,
+                          session_maker: sessionmaker):
+    await update_status(callback.from_user.id, 'Устраивает',
+                        session_maker=session_maker)
+    await callback.message.edit_text(USERS['end_questionnaire'],
+                                     reply_markup=back_menu_kb)
 
 
 @employment_router.callback_query(F.data == 'refusal_pressed')
