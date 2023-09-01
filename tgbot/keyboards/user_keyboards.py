@@ -42,3 +42,14 @@ yes_or_no_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
         ]
     ]
 )
+
+true_false_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['all_right'],
+                                 callback_data='all_right_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['correct'],
+                                 callback_data='correct_pressed')
+        ]
+    ]
+)
