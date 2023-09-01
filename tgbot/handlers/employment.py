@@ -10,7 +10,8 @@ from states.users_states import Questionnaire
 from keyboards.user_keyboards import back_menu_kb, consent_questionnaire_kb, \
                                      yes_or_no_kb
 from database.users import update_name, update_city, update_vacancies, \
-                           update_employment, update_schedule, update_status
+                           update_employment, update_schedule, \
+                           update_status, read_data
 
 employment_router: Router = Router()
 
@@ -70,13 +71,17 @@ async def request_schedule(message: Message, state: FSMContext,
 
 
 @employment_router.message(StateFilter(Questionnaire.schedule))
-async def complete_questionnaire(message: Message, state: FSMContext,
-                                 session_maker: sessionmaker):
+async def check_result(message: Message, state: FSMContext,
+                       session_maker: sessionmaker):
     await update_schedule(message.from_user.id, message.text,
                           session_maker=session_maker)
-    await update_status(message.from_user.id, 'Устраивает',
-                        session_maker=session_maker)
-    await message.answer(text=USERS['end_questionnaire'],
+    data = await read_data(message.from_user.id, session_maker=session_maker)
+    await message.answer(text='Проверьте, пожалуйста, всё ли верно?\n'
+                         f'Имя: {data["name"]}\nГород: '
+                         f'{data["city"]}\nВакансия: '
+                         f'{data["vacancies"]}\nВид трудоустройства: '
+                         f'{data["employment"]}\nРасписание: '
+                         f'{data["schedule"]}',
                          reply_markup=back_menu_kb)
     await state.clear()
 
