@@ -59,3 +59,19 @@ async def update_status(user_id, status, session_maker: sessionmaker):
     async with _session_maker() as session:
         async with session.begin():
             await session.execute(update(User).where(User.user_id == user_id).values(status=status))
+
+
+async def read_data(user_id, session_maker: sessionmaker):
+    _session_maker: sessionmaker = session_maker
+    async with _session_maker() as session:
+        async with session.begin():
+            name = await session.execute(select(User.name).where(User.user_id == user_id))
+            city = await session.execute(select(User.city).where(User.user_id == user_id))
+            vacancies = await session.execute(select(User.vacancies).where(User.user_id == user_id))
+            employment = await session.execute(select(User.employment).where(User.user_id == user_id))
+            schedule = await session.execute(select(User.schedule).where(User.user_id == user_id))
+    return {
+        'name': name.scalar(), 'city': city.scalar(),
+        'vacancies': vacancies.scalar(), 'employment': employment.scalar(),
+        'schedule': schedule.scalar()
+        }
