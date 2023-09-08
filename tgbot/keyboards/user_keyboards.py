@@ -53,3 +53,63 @@ true_false_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
         ]
     ]
 )
+
+company_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['show_vacancies'],
+                                 callback_data='show_vacancies_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['back_menu'],
+                                 callback_data='back_menu_pressed')
+        ]
+    ]
+)
+
+vacancies_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text='Водитель',
+                              callback_data='Водитель')]
+    ]
+)
+
+employments_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text='Полная занятость',
+                              callback_data='Полная занятость')]
+    ]
+)
+
+experience_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='Да'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='Нет')
+        ]
+    ]
+)
+
+education_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['general'],
+                                 callback_data='Общее'),
+            InlineKeyboardButton(text=KEYBOARDS['middle'],
+                                 callback_data='Среднее'),
+            InlineKeyboardButton(text=KEYBOARDS['high'],
+                                 callback_data='Высшее')
+        ]
+    ]
+)
+
+questions_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='questions_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='no_questions_pressed')
+        ]
+    ]
+)
