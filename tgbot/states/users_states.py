@@ -7,3 +7,17 @@ class Questionnaire(StatesGroup):
     vacancies = State()
     employment = State()
     schedule = State()
+
+
+class CityRequest(StatesGroup):
+    city = State()
+
+
+class Data(StatesGroup):
+    schedule = State()
+    full_name = State()
+    age = State()
+
+
+class Questions(StatesGroup):
+    question = State()
