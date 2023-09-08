@@ -11,6 +11,7 @@ from database.create_table import BaseModel
 from middlewares.check_register import RegisterCheck
 from database.engine import create_async_engine, get_session_maker, \
                             proceed_schemas
+from keyboards.set_menu import set_main_menu
 
 
 class ErrorFilter(logging.Filter):
@@ -49,6 +50,8 @@ async def main():
     bot: Bot = Bot(token=env('BOT_TOKEN'),
                    parse_mode='HTML')
     dp: Dispatcher = Dispatcher()
+
+    await set_main_menu(bot)
 
     dp.message.middleware(RegisterCheck())
     dp.callback_query.middleware(RegisterCheck())
