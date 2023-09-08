@@ -54,6 +54,27 @@ async def update_schedule(user_id, schedule, session_maker: sessionmaker):
             await session.execute(update(User).where(User.user_id == user_id).values(schedule=schedule))
 
 
+async def update_age(user_id, age, session_maker: sessionmaker):
+    _session_maker: sessionmaker = session_maker
+    async with _session_maker() as session:
+        async with session.begin():
+            await session.execute(update(User).where(User.user_id == user_id).values(age=age))
+
+
+async def update_experience(user_id, experience, session_maker: sessionmaker):
+    _session_maker: sessionmaker = session_maker
+    async with _session_maker() as session:
+        async with session.begin():
+            await session.execute(update(User).where(User.user_id == user_id).values(experience=experience))
+
+
+async def update_education(user_id, education, session_maker: sessionmaker):
+    _session_maker: sessionmaker = session_maker
+    async with _session_maker() as session:
+        async with session.begin():
+            await session.execute(update(User).where(User.user_id == user_id).values(education=education))
+
+
 async def update_status(user_id, status, session_maker: sessionmaker):
     _session_maker: sessionmaker = session_maker
     async with _session_maker() as session:
