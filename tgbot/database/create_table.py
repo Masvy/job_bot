@@ -9,9 +9,7 @@ class User(BaseModel):
 
     user_id = Column(BigInteger, unique=True, nullable=False, primary_key=True)
 
-    user_name = Column(VARCHAR(32), unique=True, nullable=True)
-
-    name = Column(VARCHAR(20), unique=False, nullable=True)
+    user_name = Column(VARCHAR(50), unique=True, nullable=True)
 
     city = Column(VARCHAR(20), unique=False, nullable=True)
 
@@ -20,6 +18,14 @@ class User(BaseModel):
     employment = Column(VARCHAR(20), unique=False, nullable=True)
 
     schedule = Column(VARCHAR(20), unique=False, nullable=True)
+
+    name = Column(VARCHAR(50), unique=False, nullable=True)
+
+    age = Column(INTEGER, unique=False, nullable=True)
+
+    experience = Column(VARCHAR(5), unique=False, nullable=True)
+
+    education = Column(VARCHAR(7), unique=False, nullable=True)
 
     status = Column(VARCHAR())
 
