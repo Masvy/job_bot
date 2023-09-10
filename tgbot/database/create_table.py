@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, BigInteger, VARCHAR, INTEGER
+from sqlalchemy import Column, BigInteger, VARCHAR, INTEGER, TEXT
 
 BaseModel = declarative_base()
 
@@ -26,6 +26,8 @@ class User(BaseModel):
     experience = Column(VARCHAR(5), unique=False, nullable=True)
 
     education = Column(VARCHAR(7), unique=False, nullable=True)
+
+    question = Column(TEXT, unique=False, nullable=True)
 
     status = Column(VARCHAR())
 
