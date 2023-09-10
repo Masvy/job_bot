@@ -12,11 +12,11 @@ async def read_access(user_id, session_maker: sessionmaker):
     return access
 
 
-async def update_access(user_id, session_maker: sessionmaker):
+async def update_access(user_id, access, session_maker: sessionmaker):
     _session_maker: sessionmaker = session_maker
     async with _session_maker() as session:
         async with session.begin():
-            await session.execute(update(User).where(User.user_id == user_id).values(access=1))
+            await session.execute(update(User).where(User.user_id == user_id).values(access=access))
 
 
 async def update_name(user_id, name, session_maker: sessionmaker):
@@ -73,6 +73,13 @@ async def update_education(user_id, education, session_maker: sessionmaker):
     async with _session_maker() as session:
         async with session.begin():
             await session.execute(update(User).where(User.user_id == user_id).values(education=education))
+
+
+async def update_question(user_id, question, session_maker: sessionmaker):
+    _session_maker: sessionmaker = session_maker
+    async with _session_maker() as session:
+        async with session.begin():
+            await session.execute(update(User).where(User.user_id == user_id).values(question=question))
 
 
 async def update_status(user_id, status, session_maker: sessionmaker):

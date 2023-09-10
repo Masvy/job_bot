@@ -60,6 +60,38 @@ async def applicants_schedule(session_maker: sessionmaker):
             return schedule
 
 
+async def applicants_age(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.age).where(User.status == 'Соискатель'))
+            age = [row[0] for row in result]
+            return age
+
+
+async def applicants_experience(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.experience).where(User.status == 'Соискатель'))
+            experience = [row[0] for row in result]
+            return experience
+
+
+async def applicants_education(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.education).where(User.status == 'Соискатель'))
+            education = [row[0] for row in result]
+            return education
+
+
+async def applicants_question(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.question).where(User.status == 'Соискатель'))
+            question = [row[0] for row in result]
+            return question
+
+
 async def applicants_id(session_maker: sessionmaker):
     async with session_maker() as session:
         async with session.begin():
@@ -124,9 +156,129 @@ async def satisfied_schedule(session_maker: sessionmaker):
             return schedule
 
 
+async def satisfied_age(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.age).where(User.status == 'Устраивает'))
+            age = [row[0] for row in result]
+            return age
+
+
+async def satisfied_experience(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.experience).where(User.status == 'Устраивает'))
+            experience = [row[0] for row in result]
+            return experience
+
+
+async def satisfied_education(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.education).where(User.status == 'Устраивает'))
+            education = [row[0] for row in result]
+            return education
+
+
 async def satisfied_id(session_maker: sessionmaker):
     async with session_maker() as session:
         async with session.begin():
             result = await session.execute(select(User.user_id).where(User.status == 'Устраивает'))
             user_id = [row[0] for row in result]
             return user_id
+
+
+async def number_leads(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(func.count()).where(User.status == 'Лид'))
+            applicants = result.scalar()
+            return applicants
+
+
+async def leads_user_name(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.user_name).where(User.status == 'Лид'))
+            user_name = [row[0] for row in result]
+            return user_name
+
+
+async def leads_name(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.name).where(User.status == 'Лид'))
+            names = [row[0] for row in result]
+            return names
+
+
+async def leads_city(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.city).where(User.status == 'Лид'))
+            citys = [row[0] for row in result]
+            return citys
+
+
+async def leads_vacancies(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.vacancies).where(User.status == 'Лид'))
+            vacancies = [row[0] for row in result]
+            return vacancies
+
+
+async def leads_employment(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.employment).where(User.status == 'Лид'))
+            employment = [row[0] for row in result]
+            return employment
+
+
+async def leads_schedule(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.schedule).where(User.status == 'Лид'))
+            schedule = [row[0] for row in result]
+            return schedule
+
+
+async def leads_age(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.age).where(User.status == 'Лид'))
+            age = [row[0] for row in result]
+            return age
+
+
+async def leads_experience(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.experience).where(User.status == 'Лид'))
+            experience = [row[0] for row in result]
+            return experience
+
+
+async def leads_education(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.education).where(User.status == 'Лид'))
+            education = [row[0] for row in result]
+            return education
+
+
+async def leads_id(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(User.user_id).where(User.status == 'Лид'))
+            user_id = [row[0] for row in result]
+            return user_id
+
+
+async def number_registered(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(func.count(User.user_id))
+            users = result.scalar()
+            return users
