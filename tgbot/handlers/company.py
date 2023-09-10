@@ -11,32 +11,20 @@ from keyboards.user_keyboards import company_kb, vacancies_kb, \
                                      employments_kb, experience_kb, \
                                      education_kb, back_menu_kb, \
                                      questions_kb
-from database.users import read_access, update_access, update_city, \
+from database.users import update_access, update_city, \
                            update_vacancies, update_employment, \
                            update_schedule, update_name, update_age, \
                            update_experience, update_education, \
-                           update_status
+                           update_status, update_question
 
 company_router: Router = Router()
 
 
-@company_router.callback_query(or_f(F.data == 'company_pressed', F.data == 'employment_pressed'))
-async def show_company(callback: CallbackQuery,
-                       session_maker: sessionmaker):
-    if callback.data == 'company_pressed':
-        await callback.message.edit_text(text=USERS['company'])
-        await callback.message.answer(text=USERS['jobs_in_city'],
-                                      reply_markup=company_kb)
-        access = await read_access(callback.from_user.id,
-                                   session_maker=session_maker)
-        if access == 0:
-            await update_access(callback.from_user.id,
-                                session_maker=session_maker)
-        else:
-            pass
-    elif callback.data == 'employment_pressed':
-        await callback.message.answer(text=USERS['jobs_in_city'],
-                                      reply_markup=company_kb)
+@company_router.callback_query(F.data == 'company_pressed')
+async def show_company(callback: CallbackQuery):
+    await callback.message.edit_text(text=USERS['company'])
+    await callback.message.answer(text=USERS['jobs_in_city'],
+                                  reply_markup=company_kb)
 
 
 @company_router.callback_query(F.data == 'show_vacancies_pressed',
@@ -139,6 +127,7 @@ async def requst_question(callback: CallbackQuery,
                           session_maker: sessionmaker):
     await update_education(callback.from_user.id, callback.data,
                            session_maker=session_maker)
+    await update_access(callback.from_user.id, 1, session_maker=session_maker)
     await callback.message.edit_text(text='Первичная анкета заполнена и '
                                      'передана специалисту. В течении 3 '
                                      'рабочих дней с вами свяжества менеджер '
@@ -193,6 +182,8 @@ async def respond_consent(callback: CallbackQuery,
 @company_router.message(StateFilter(Questions.question))
 async def answer_question(message: Message, state: FSMContext,
                           session_maker: sessionmaker):
+    await update_question(message.from_user.id, message.text,
+                          session_maker=session_maker)
     await update_status(message.from_user.id, 'Соискатель',
                         session_maker=session_maker)
     await message.answer(text='Я передам ваш вопрос менеджеру, он свяжется с '
