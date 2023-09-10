@@ -7,17 +7,28 @@ from sqlalchemy.orm import sessionmaker
 from lexiocon.admin_lexicon import ADMIN
 from filters.admin_filters import IsAdmin
 from keyboards.admin_keyboards import admin_menu_kb, category_kb, \
-                                      manipuations_kb_2, \
-                                      function, MyCallbackFactory
+                                      manipuations_kb_1, \
+                                      function, function2, \
+                                      MyCallbackFactory, manipuations_kb_2, \
+                                      manipuations_kb_3
 from database.users import update_status
 from database.admin import number_applicants, applicants_name, \
                            applicants_city, applicants_vacancies, \
                            applicants_employment, applicants_schedule, \
                            applicants_user_name, applicants_id, \
+                           applicants_age, applicants_experience, \
+                           applicants_education, applicants_question, \
                            number_satisfied, satisfied_name, \
                            satisfied_city, satisfied_vacancies, \
                            satisfied_employment, satisfied_schedule, \
-                           satisfied_user_name, satisfied_id
+                           satisfied_user_name, satisfied_id, \
+                           satisfied_age, satisfied_experience, \
+                           satisfied_education, \
+                           number_leads, leads_name, leads_city, \
+                           leads_vacancies, leads_employment, \
+                           leads_schedule, leads_user_name, \
+                           leads_age, leads_experience, leads_education, \
+                           number_registered
 
 admin_router: Router = Router()
 
@@ -37,10 +48,19 @@ async def open_admin(update: types.update):
                             reply_markup=admin_menu_kb)
 
 
-@admin_router.callback_query(F.data == 'statistics')
+@admin_router.callback_query(F.data == 'statistics_pressed')
 async def open_statistics(callback: CallbackQuery,
                           session_maker: sessionmaker):
-    await callback.message.edit_text(text='Разработка данного раздела завершена на 70%')
+    users = await number_registered(session_maker=session_maker)
+    applicants = await number_applicants(session_maker=session_maker)
+    satisfied = await number_satisfied(session_maker=session_maker)
+    leads = await number_leads(session_maker=session_maker)
+    await callback.message.edit_text(text='Количество пользователей: '
+                                     f'{users}\nКоличество соискателей: '
+                                     f'{applicants}\nКоличество тех, кого '
+                                     f'устроило предложение: {satisfied}\n'
+                                     f'Количество лидов: {leads}',
+                                     reply_markup=manipuations_kb_3)
 
 
 @admin_router.callback_query(F.data == 'applications_pressed')
@@ -62,16 +82,24 @@ async def show_applicants(callback: CallbackQuery,
     schedule = await applicants_schedule(session_maker=session_maker)
     user_name = await applicants_user_name(session_maker=session_maker)
     user_id = await applicants_id(session_maker=session_maker)
+    age = await applicants_age(session_maker=session_maker)
+    experience = await applicants_experience(session_maker=session_maker)
+    education = await applicants_education(session_maker=session_maker)
+    question = await applicants_question(session_maker=session_maker)
     for i in range(int(applicants)):
         await callback.message.answer(text=f'Имя: {names[i]}\n'
+                                      f'Возраст: {age[i]}\n'
                                       f'Город: {city[i]}\nВакансия: '
-                                      f'{vacancies[i]}\nВид трудусьтройства: '
+                                      f'{vacancies[i]}\nВид трудоустройства: '
                                       f'{employment[i]}\nРасписание: '
                                       f'{schedule[i]}\n'
-                                      f'https://t.me/{user_name[i]}',
+                                      f'Опыт работы: {experience[i]}\n'
+                                      f'Образование: {education[i]}\n'
+                                      f'Вопрос: {question[i]}\n'
+                                      f'https://t.me/{user_name[i]}\n',
                                       reply_markup=function(user_id[i]))
     await callback.message.answer(text='Список пользователей окончен',
-                                  reply_markup=manipuations_kb_2)
+                                  reply_markup=manipuations_kb_1)
 
 
 @admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 1))
@@ -91,7 +119,7 @@ async def move_suits(callback: CallbackQuery,
 
 
 @admin_router.callback_query(or_f(F.data == 'satisfied_offer_pressed',
-                                  F.data == 'update_pressed1'))
+                                  F.data == 'update_pressed_2'))
 async def show_satisfied(callback: CallbackQuery,
                          session_maker: sessionmaker):
     await callback.message.edit_text(text=ADMIN['time'])
@@ -103,12 +131,55 @@ async def show_satisfied(callback: CallbackQuery,
     schedule = await satisfied_schedule(session_maker=session_maker)
     user_name = await satisfied_user_name(session_maker=session_maker)
     user_id = await satisfied_id(session_maker=session_maker)
+    age = await satisfied_age(session_maker=session_maker)
+    experience = await satisfied_experience(session_maker=session_maker)
+    education = await satisfied_education(session_maker=session_maker)
     for i in range(int(satisfied)):
         await callback.message.answer(text=f'Имя: {names[i]}\n'
+                                      f'Возраст: {age[i]}\n'
                                       f'Город: {city[i]}\nВакансия: '
-                                      f'{vacancies[i]}\nВид трудусьтройства: '
+                                      f'{vacancies[i]}\nВид трудоустройства: '
                                       f'{employment[i]}\nРасписание: '
                                       f'{schedule[i]}\n'
-                                      f'https://t.me/{user_name[i]}')
+                                      f'Опыт работы: {experience[i]}\n'
+                                      f'Образование: {education[i]}\n'
+                                      f'https://t.me/{user_name[i]}',
+                                      reply_markup=function2(user_id[i]))
     await callback.message.answer(text='Список пользователей окончен',
                                   reply_markup=manipuations_kb_2)
+
+
+@admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 3))
+async def add_lead(callback: CallbackQuery,
+                   session_maker: sessionmaker):
+    await update_status(int(callback.data[4:-2]), 'Лид',
+                        session_maker=session_maker)
+    await callback.message.edit_text(text=ADMIN['move_leads'])
+
+
+@admin_router.callback_query(F.data == 'list_leads_pressed')
+async def show_leads(callback: CallbackQuery,
+                     session_maker: sessionmaker):
+    await callback.message.edit_text(text=ADMIN['time'])
+    leads = await number_leads(session_maker=session_maker)
+    names = await leads_name(session_maker=session_maker)
+    city = await leads_city(session_maker=session_maker)
+    vacancies = await leads_vacancies(session_maker=session_maker)
+    employment = await leads_employment(session_maker=session_maker)
+    schedule = await leads_schedule(session_maker=session_maker)
+    user_name = await leads_user_name(session_maker=session_maker)
+    age = await leads_age(session_maker=session_maker)
+    experience = await leads_experience(session_maker=session_maker)
+    education = await leads_education(session_maker=session_maker)
+    for i in range(int(leads)):
+        await callback.message.answer(text=f'Имя: {names[i]}\n'
+                                      f'Возраст: {age[i]}\n'
+                                      f'Город: {city[i]}\nВакансия: '
+                                      f'{vacancies[i]}\nВид трудоустройства: '
+                                      f'{employment[i]}\nРасписание: '
+                                      f'{schedule[i]}'
+                                      f'Опыт работы: {experience[i]}\n'
+                                      f'Образование: {education[i]}\n'
+                                      f'https://t.me/{user_name[i]}')
+    await callback.message.answer(text='Список пользователей окончен',
+                                  reply_markup=manipuations_kb_3)
