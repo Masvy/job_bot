@@ -30,7 +30,7 @@ category_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-manipuations_kb_2: InlineKeyboardButton = InlineKeyboardMarkup(
+manipuations_kb_1: InlineKeyboardButton = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text='Обновить список',
@@ -38,6 +38,24 @@ manipuations_kb_2: InlineKeyboardButton = InlineKeyboardMarkup(
             InlineKeyboardButton(text=KEYBOARDS['back_menu'],
                                  callback_data='back_menu_admin_pressed')
         ]
+    ]
+)
+
+manipuations_kb_2: InlineKeyboardButton = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text='Обновить список',
+                                 callback_data='update_pressed_2'),
+            InlineKeyboardButton(text=KEYBOARDS['back_menu'],
+                                 callback_data='back_menu_admin_pressed')
+        ]
+    ]
+)
+
+manipuations_kb_3: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text=KEYBOARDS['back_menu'],
+                              callback_data='back_menu_admin_pressed')]
     ]
 )
 
