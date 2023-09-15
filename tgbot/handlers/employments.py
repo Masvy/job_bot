@@ -5,12 +5,12 @@ from aiogram.filters import StateFilter, or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 
-from lexiocon.user_lexicon import USERS
+from lexiocon.user_lexicon import USERS, VACANCIES
 from states.users_states import CityRequest, Data, Questions
 from keyboards.user_keyboards import company_kb, vacancies_kb, \
-                                     employments_kb, experience_kb, \
+                                     employments_kb_1, experience_kb, \
                                      education_kb, back_menu_kb, \
-                                     questions_kb
+                                     questions_kb, employments_kb_2
 from database.users import update_city, update_vacancies, update_employment, \
                            update_schedule, update_name, update_age, \
                            update_experience, update_education, \
@@ -44,49 +44,57 @@ async def show_vacancies_2(message: Message,
     await state.clear()
 
 
-@employment_router.callback_query(F.data == 'Водитель')
-async def show_description_2(callback: CallbackQuery,
-                             session_maker: sessionmaker):
+@employment_router.callback_query(or_f(F.data == 'Водитель',
+                                       F.data == 'Менеджер по продажам'))
+async def show_description(callback: CallbackQuery,
+                           session_maker: sessionmaker):
     await update_vacancies(callback.from_user.id, callback.data,
                            session_maker=session_maker)
-    await callback.message.edit_text(text='Вакансия 1: Водитель\nЗП от '
-                                     '65 000 рублей с ежедневными выплатами '
-                                     'на карту.\n\nОбязанности:\nОбеспечение '
-                                     'своевременной доставки грузов.\n\n'
-                                     'Требования:\nВодительское удостоверение '
-                                     'категории В/С;\nСтаж от 1 года\n\n'
-                                     'Условия труда:\nСлужебный автомобиль '
-                                     '“Марка”;')
-    await callback.message.answer(text=USERS['types_employment'])
-    await callback.message.answer(text='Полная занятость - Полный рабочий '
-                                  'день (2/2, 3/3, 5/2):',
-                                  reply_markup=employments_kb)
+    if callback.data == 'Водитель':
+        await callback.message.edit_text(text=VACANCIES['driver'])
+        await callback.message.answer(text=USERS['types_employment_1'],
+                                      reply_markup=employments_kb_1)
+    elif callback.data == 'Менеджер по продажам':
+        await callback.message.edit_text(text=VACANCIES['sales_manager'])
+        await callback.message.answer(text=USERS['types_employment_2'],
+                                      reply_markup=employments_kb_2)
 
 
-@employment_router.callback_query(F.data == 'Полная занятость',
-                                  StateFilter(default_state))
-async def request_employment_2(callback: CallbackQuery, state: FSMContext,
-                               session_maker: sessionmaker):
+@employment_router.callback_query(or_f(F.data == 'Полная занятость',
+                                       F.data == 'Частичная занятость',
+                                       F.data == 'Подработка'),
+                                       StateFilter(default_state))
+async def request_employment(callback: CallbackQuery,
+                             session_maker: sessionmaker,
+                             state: FSMContext):
     await update_employment(callback.from_user.id, callback.data,
                             session_maker=session_maker)
-    await callback.message.edit_text(text='Какой график работы вас '
-                                     'интересует?')
+    if callback.data == 'Полная занятость':
+        await callback.message.edit_text(text='Какой график работы вас '
+                                         'интересует?')
+    elif callback.data == 'Частичная занятость':
+        await callback.message.edit_text(text='Сколько часов в день вы '
+                                         'готовы уделять работе?')
+    else:
+        await callback.message.edit_text(text='Сколько часов в день вы '
+                                         'готовы уделять работе?')
     await state.set_state(Data.schedule)
 
 
 @employment_router.message(StateFilter(Data.schedule))
-async def request_full_name_2(message: Message, state: FSMContext,
-                              session_maker: sessionmaker):
+async def request_full_name(message: Message, state: FSMContext,
+                            session_maker: sessionmaker):
     await update_schedule(message.from_user.id, message.text,
                           session_maker=session_maker)
     await message.answer(text='Отлично! Чтобы ускорить процесс '
-                         'трудоустройства, вы можете заполнить '
-                         'анкету сейчас. Укажите полностью ваше '
-                         'ФИО:')
+                              'трудоустройства, вы можете заполнить '
+                              'анкету сейчас. Укажите полностью ваше '
+                              'ФИО:')
     await state.set_state(Data.full_name)
 
 
-@employment_router.message(StateFilter(Data.full_name))
+@employment_router.message(StateFilter(Data.full_name),
+                           lambda x: 2 <= len(x.text.split()) <= 3)
 async def request_age_2(message: Message, state: FSMContext,
                         session_maker: sessionmaker):
     await update_name(message.from_user.id, message.text,
@@ -97,7 +105,13 @@ async def request_age_2(message: Message, state: FSMContext,
     await state.set_state(Data.age)
 
 
-@employment_router.message(StateFilter(Data.age))
+@employment_router.message(StateFilter(Data.full_name))
+async def incorrect_name_2(message: Message):
+    await message.answer(text='Это не очень похоже на ФИО')
+
+
+@employment_router.message(StateFilter(Data.age),
+                           lambda x: x.text.isdigit())
 async def request_expirience_2(message: Message, state: FSMContext,
                                session_maker: sessionmaker):
     await update_age(message.from_user.id, int(message.text),
@@ -105,6 +119,11 @@ async def request_expirience_2(message: Message, state: FSMContext,
     await message.answer(text='У вас есть опыт работы в данной подобной '
                          'должности?', reply_markup=experience_kb)
     await state.clear()
+
+
+@employment_router.message(StateFilter(Data.age))
+async def incorrect_age_2(message: Message):
+    await message.answer(text='Это не очень похоже на возраст')
 
 
 @employment_router.callback_query(or_f(F.data == 'Да',
