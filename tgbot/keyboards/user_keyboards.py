@@ -83,15 +83,85 @@ company_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
 
 vacancies_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='Водитель',
-                              callback_data='Водитель')]
+        [InlineKeyboardButton(text=KEYBOARDS['driver'],
+                              callback_data='Водитель')],
+        [InlineKeyboardButton(text=KEYBOARDS['sales_manager'],
+                             callback_data='Менеджер по продажам')]
     ]
 )
 
-employments_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_kb_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text='Полная занятость',
-                              callback_data='Полная занятость')]
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='Полная занятость')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_employment'],
+                              callback_data='Частичная занятость')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='Подработка')]
+    ]
+)
+
+employments_kb_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='Полная занятость')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='Подработка')]
+    ]
+)
+
+schedule_1_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['2/2'],
+                                 callback_data='2/2'),
+            InlineKeyboardButton(text=KEYBOARDS['3/3'],
+                                 callback_data='3/3'),
+            InlineKeyboardButton(text=KEYBOARDS['5/2'],
+                                 callback_data='5/2')
+        ]
+    ]
+)
+
+schedule_2_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['3-4'],
+                                 callback_data='3-4'),
+            InlineKeyboardButton(text=KEYBOARDS['5-6'],
+                                 callback_data='5-6')
+        ]
+    ]
+)
+
+schedule_3_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['1-2'],
+                                 callback_data='1-2'),
+            InlineKeyboardButton(text=KEYBOARDS['3-4'],
+                                 callback_data='3-4')
+        ]
+    ]
+)
+
+schedule_4_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['2/2'],
+                                 callback_data='2/2'),
+            InlineKeyboardButton(text=KEYBOARDS['5/2'],
+                                 callback_data='5/2')
+        ]
+    ]
+)
+
+schedule_5_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['2-4'],
+                                 callback_data='2-4')
+        ]
     ]
 )
 

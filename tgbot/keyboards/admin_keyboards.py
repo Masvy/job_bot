@@ -73,10 +73,14 @@ def function(user_id):
                                      callback_data=MyCallbackFactory(
                                          user_id=user_id,
                                          subcategory=1).pack()),
+                InlineKeyboardButton(text='📝',
+                                     callback_data=MyCallbackFactory(
+                                         user_id=user_id,
+                                         subcategory=2).pack()),
                 InlineKeyboardButton(text='✅',
                                      callback_data=MyCallbackFactory(
                                          user_id=user_id,
-                                         subcategory=2).pack())
+                                         subcategory=3).pack())
             ]
         ]
     )
@@ -85,9 +89,15 @@ def function(user_id):
 def function2(user_id):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text=KEYBOARDS['send_leads'],
-                                  callback_data=MyCallbackFactory(
-                                  user_id=user_id,
-                                  subcategory=3).pack())]
+            [
+                InlineKeyboardButton(text=KEYBOARDS['send_leads'],
+                                     callback_data=MyCallbackFactory(
+                                     user_id=user_id,
+                                     subcategory=4).pack()),
+                InlineKeyboardButton(text='📝',
+                                     callback_data=MyCallbackFactory(
+                                         user_id=user_id,
+                                         subcategory=2).pack()),
+            ]
         ]
     )
