@@ -49,7 +49,9 @@ async def show_vacancies(message: Message,
 
 
 @company_router.callback_query(or_f(F.data == 'Водитель',
-                                    F.data == 'Менеджер по продажам'))
+                                    F.data == 'Менеджер по продажам',
+                                    F.data == 'Продавец-кассир',
+                                    F.data == 'Разнорабочий'))
 async def show_description(callback: CallbackQuery,
                            session_maker: sessionmaker):
     '''Этот хендлер реагирует на кнопки Водитель/Менеджер по продажам'''
@@ -62,6 +64,15 @@ async def show_description(callback: CallbackQuery,
     elif callback.data == 'Менеджер по продажам':
         await callback.message.edit_text(text=VACANCIES['sales_manager'])
         await callback.message.answer(text=USERS['types_employment_2'],
+                                      reply_markup=employments_kb_2)
+    elif callback.data == 'Продавец-кассир':
+        await callback.message.edit_text(text=VACANCIES['salesman-cashier'])
+        await callback.message.answer(text=USERS['types_employment_3'],
+                                      reply_markup=employments_kb_2)
+
+    elif callback.data == 'Разнорабочий':
+        await callback.message.edit_text(text=VACANCIES['handyman'])
+        await callback.message.answer(text=USERS['types_employment_4'],
                                       reply_markup=employments_kb_2)
 
 
