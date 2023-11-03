@@ -10,7 +10,7 @@ admin_menu_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
                               callback_data='statistics_pressed')],
         [InlineKeyboardButton(text=KEYBOARDS['applications'],
                               callback_data='applications_pressed')]
-        ]
+    ]
 )
 
 category_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
@@ -73,14 +73,10 @@ def function(user_id):
                                      callback_data=MyCallbackFactory(
                                          user_id=user_id,
                                          subcategory=1).pack()),
-                InlineKeyboardButton(text='📝',
-                                     callback_data=MyCallbackFactory(
-                                         user_id=user_id,
-                                         subcategory=2).pack()),
                 InlineKeyboardButton(text='✅',
                                      callback_data=MyCallbackFactory(
                                          user_id=user_id,
-                                         subcategory=3).pack())
+                                         subcategory=2).pack())
             ]
         ]
     )
@@ -93,11 +89,7 @@ def function2(user_id):
                 InlineKeyboardButton(text=KEYBOARDS['send_leads'],
                                      callback_data=MyCallbackFactory(
                                      user_id=user_id,
-                                     subcategory=4).pack()),
-                InlineKeyboardButton(text='📝',
-                                     callback_data=MyCallbackFactory(
-                                         user_id=user_id,
-                                         subcategory=2).pack()),
+                                     subcategory=3).pack())
             ]
         ]
     )

@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from sqlalchemy.orm import sessionmaker
 from aiogram.filters import StateFilter, or_f
 from aiogram.fsm.context import FSMContext
@@ -8,14 +8,14 @@ from aiogram.fsm.state import default_state
 from lexiocon.user_lexicon import USERS, VACANCIES
 from states.users_states import CityRequest, Data, Questions
 from keyboards.user_keyboards import company_kb, vacancies_kb, \
-                                     employments_kb_1, experience_kb, \
-                                     education_kb, back_menu_kb, \
-                                     questions_kb, employments_kb_2
+    employments_kb_1, experience_kb, \
+    education_kb, back_menu_kb, \
+    questions_kb, employments_kb_2, manager_kb
 from database.users import update_access, update_city, \
-                           update_vacancies, update_employment, \
-                           update_schedule, update_name, update_age, \
-                           update_experience, update_education, \
-                           update_status, update_question
+    update_vacancies, update_employment, \
+    update_schedule, update_name, update_age, \
+    update_experience, update_education, \
+    update_status, update_question
 
 company_router: Router = Router()
 
@@ -51,7 +51,8 @@ async def show_vacancies(message: Message,
 @company_router.callback_query(or_f(F.data == 'Водитель',
                                     F.data == 'Менеджер по продажам',
                                     F.data == 'Продавец-кассир',
-                                    F.data == 'Разнорабочий'))
+                                    F.data == 'Разнорабочий',
+                                    F.data == 'Администратор'))
 async def show_description(callback: CallbackQuery,
                            session_maker: sessionmaker):
     '''Этот хендлер реагирует на кнопки Водитель/Менеджер по продажам'''
@@ -75,11 +76,16 @@ async def show_description(callback: CallbackQuery,
         await callback.message.answer(text=USERS['types_employment_4'],
                                       reply_markup=employments_kb_2)
 
+    elif callback.data == 'Администратор':
+        await callback.message.edit_text(text=VACANCIES['administrator'])
+        await callback.message.answer(text=USERS['types_employment_4'],
+                                      reply_markup=employments_kb_2)
+
 
 @company_router.callback_query(or_f(F.data == 'Полная занятость',
                                     F.data == 'Частичная занятость',
                                     F.data == 'Подработка'),
-                                    StateFilter(default_state))
+                               StateFilter(default_state))
 async def request_employment(callback: CallbackQuery,
                              session_maker: sessionmaker,
                              state: FSMContext):
@@ -91,14 +97,14 @@ async def request_employment(callback: CallbackQuery,
     await update_employment(callback.from_user.id, callback.data,
                             session_maker=session_maker)
     if callback.data == 'Полная занятость':
-        await callback.message.edit_text(text='Какой график работы вас '
-                                         'интересует?')
+        await callback.message.answer(text='Какой график работы вас '
+                                      'интересует?')
     elif callback.data == 'Частичная занятость':
-        await callback.message.edit_text(text='Сколько часов в день вы '
-                                         'готовы уделять работе?')
+        await callback.message.answer(text='Сколько часов в день вы '
+                                      'готовы уделять работе?')
     else:
-        await callback.message.edit_text(text='Сколько часов в день вы '
-                                         'готовы уделять работе?')
+        await callback.message.answer(text='Сколько часов в день вы '
+                                      'готовы уделять работе?')
     await state.set_state(Data.schedule)
 
 
@@ -167,11 +173,12 @@ async def requst_question(callback: CallbackQuery,
     await update_education(callback.from_user.id, callback.data,
                            session_maker=session_maker)
     await update_access(callback.from_user.id, 1, session_maker=session_maker)
-    await callback.message.edit_text(text='Первичная анкета заполнена и '
-                                     'передана специалисту. В течении 3 '
-                                     'рабочих дней с вами свяжества менеджер '
-                                     'и назначит дату встречи для '
-                                     'обсуждения деталей работы.\n')
+    await callback.message.edit_text(text='Первичная анкета заполнена.'
+                                     'В течении 3 дней менеджер рассмотрит '
+                                     'вашу заявку и даст ответ по '
+                                     'трудоустройству. А так же назначит '
+                                     'день встречи для обсуждения деталей '
+                                     'работы.')
     await callback.message.answer(text='На собеседование возьмите с собой '
                                   'следующие документы:\n\t📌 Паспорт'
                                   ';\n\t📌 ИНН;\n\t📌 Документ, подтверждающий '
@@ -179,17 +186,17 @@ async def requst_question(callback: CallbackQuery,
                                   'менеджер предложит вам сразу заключить '
                                   'трудовой договор/ГПХ и приступить к работе '
                                   'на следующий день.')
-    await callback.message.answer(text='Зарплатный проект нашей компании '
-                                  'предоставляет банк "название".\nБанк 🏦 '
-                                  '"Название" является нашим партнером и при '
-                                  'трудоустройстве в договоренеобходимо '
-                                  'указать номер счета, привязанный к '
-                                  'зарплатному проекту.\nВсе расходы по '
-                                  'обслуживанию зарплатной карты несет наша '
-                                  'компания, поэтому для вас карта будет '
-                                  'совершенно бесплатна.\nЧтобы привязать '
-                                  '💳 карту к нашему зарплатному проекту, '
-                                  'закажите ее по ссылке: ссылка')
+    # await callback.message.answer(text='Зарплатный проект нашей компании '
+    #                               'предоставляет банк "название".\nБанк 🏦 '
+    #                               '"Название" является нашим партнером и при '
+    #                               'трудоустройстве в договоренеобходимо '
+    #                               'указать номер счета, привязанный к '
+    #                               'зарплатному проекту.\nВсе расходы по '
+    #                               'обслуживанию зарплатной карты несет наша '
+    #                               'компания, поэтому для вас карта будет '
+    #                               'совершенно бесплатна.\nЧтобы привязать '
+    #                               '💳 карту к нашему зарплатному проекту, '
+    #                               'закажите ее по ссылке: ссылка')
     await callback.message.answer(text='Чтобы получать выплаты заработной '
                                   'платы с первого рабочего дня, закажите '
                                   'карту прямо сейчас, т.к. ее изготовление '
@@ -200,13 +207,17 @@ async def requst_question(callback: CallbackQuery,
 
 
 @company_router.callback_query(F.data == 'no_questions_pressed')
-async def respond_rejection(callabck: CallbackQuery,
+async def respond_rejection(callback: CallbackQuery,
                             session_maker: sessionmaker):
-    await update_status(callabck.from_user.id, 'Соискатель',
+    await update_status(callback.from_user.id, 'Соискатель',
                         session_maker=session_maker)
-    await callabck.message.edit_text(text='Отлично! В течении 3-х рабочих '
-                                     'дней с вами свяжется менеджер и '
-                                     'назначит дату собеседования',
+    audio1 = FSInputFile('tgbot/audio/здравствуйте меня зовут.m4a')
+    audio2 = FSInputFile('tgbot/audio/смотрите сейчас нам.m4a')
+    audio3 = FSInputFile('tgbot/audio/прошу обратить внимание.m4a')
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.edit_text('Контакты менеджера: @GroupSwit',
                                      reply_markup=back_menu_kb)
 
 
@@ -228,5 +239,17 @@ async def answer_question(message: Message, state: FSMContext,
     await message.answer(text='Я передам ваш вопрос менеджеру, он свяжется с '
                          'вами в течении 3-х рабочих дней и даст ответ на '
                          'этот и другие вопросы.',
-                         reply_markup=back_menu_kb)
+                         reply_markup=manager_kb)
     await state.clear()
+
+
+@company_router.callback_query(F.data == 'manager_pressed')
+async def send_audio(callback: CallbackQuery):
+    audio1 = FSInputFile('tgbot/audio/здравствуйте меня зовут.m4a')
+    audio2 = FSInputFile('tgbot/audio/смотрите сейчас нам.m4a')
+    audio3 = FSInputFile('tgbot/audio/прошу обратить внимание.m4a')
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.answer('Контакты менеджера: @GroupSwit',
+                                  reply_markup=back_menu_kb)

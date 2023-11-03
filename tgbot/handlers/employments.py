@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, FSInputFile
 from sqlalchemy.orm import sessionmaker
 from aiogram.filters import StateFilter, or_f
 from aiogram.fsm.context import FSMContext
@@ -8,13 +8,13 @@ from aiogram.fsm.state import default_state
 from lexiocon.user_lexicon import USERS, VACANCIES
 from states.users_states import CityRequest, Data, Questions
 from keyboards.user_keyboards import company_kb, vacancies_kb, \
-                                     employments_kb_1, experience_kb, \
-                                     education_kb, back_menu_kb, \
-                                     questions_kb, employments_kb_2
+    employments_kb_1, experience_kb, \
+    education_kb, back_menu_kb, \
+    questions_kb, employments_kb_2, manager_kb
 from database.users import update_city, update_vacancies, update_employment, \
-                           update_schedule, update_name, update_age, \
-                           update_experience, update_education, \
-                           update_status, update_question
+    update_schedule, update_name, update_age, \
+    update_experience, update_education, \
+    update_status, update_question
 
 employment_router: Router = Router()
 
@@ -45,9 +45,14 @@ async def show_vacancies_2(message: Message,
 
 
 @employment_router.callback_query(or_f(F.data == 'Водитель',
-                                       F.data == 'Менеджер по продажам'))
-async def show_description(callback: CallbackQuery,
-                           session_maker: sessionmaker):
+                                       F.data == 'Менеджер по продажам',
+                                       F.data == 'Продавец-кассир',
+                                       F.data == 'Разнорабочий',
+                                       F.data == 'Администратор',
+                                       F.data == 'back_vacancies_pressed'))
+async def show_description_2(callback: CallbackQuery,
+                             session_maker: sessionmaker):
+    '''Этот хендлер реагирует на кнопки Водитель/Менеджер по продажам'''
     await update_vacancies(callback.from_user.id, callback.data,
                            session_maker=session_maker)
     if callback.data == 'Водитель':
@@ -58,12 +63,26 @@ async def show_description(callback: CallbackQuery,
         await callback.message.edit_text(text=VACANCIES['sales_manager'])
         await callback.message.answer(text=USERS['types_employment_2'],
                                       reply_markup=employments_kb_2)
+    elif callback.data == 'Продавец-кассир':
+        await callback.message.edit_text(text=VACANCIES['salesman-cashier'])
+        await callback.message.answer(text=USERS['types_employment_3'],
+                                      reply_markup=employments_kb_2)
+
+    elif callback.data == 'Разнорабочий':
+        await callback.message.edit_text(text=VACANCIES['handyman'])
+        await callback.message.answer(text=USERS['types_employment_4'],
+                                      reply_markup=employments_kb_2)
+
+    elif callback.data == 'Администратор':
+        await callback.message.edit_text(text=VACANCIES['administrator'])
+        await callback.message.answer(text=USERS['types_employment_4'],
+                                      reply_markup=employments_kb_2)
 
 
 @employment_router.callback_query(or_f(F.data == 'Полная занятость',
                                        F.data == 'Частичная занятость',
                                        F.data == 'Подработка'),
-                                       StateFilter(default_state))
+                                  StateFilter(default_state))
 async def request_employment(callback: CallbackQuery,
                              session_maker: sessionmaker,
                              state: FSMContext):
@@ -144,11 +163,12 @@ async def requst_question_2(callback: CallbackQuery,
                             session_maker: sessionmaker):
     await update_education(callback.from_user.id, callback.data,
                            session_maker=session_maker)
-    await callback.message.edit_text(text='Первичная анкета заполнена и '
-                                     'передана специалисту. В течении 3 '
-                                     'рабочих дней с вами свяжества менеджер '
-                                     'и назначит дату встречи для '
-                                     'обсуждения деталей работы.\n')
+    await callback.message.edit_text(text='Первичная анкета заполнена.'
+                                     'В течении 3 дней менеджер рассмотрит '
+                                     'вашу заявку и даст ответ по '
+                                     'трудоустройству. А так же назначит '
+                                     'день встречи для обсуждения деталей '
+                                     'работы.')
     await callback.message.answer(text='На собеседование возьмите с собой '
                                   'следующие документы:\n\t📌 Паспорт'
                                   ';\n\t📌 ИНН;\n\t📌 Документ, подтверждающий '
@@ -177,13 +197,17 @@ async def requst_question_2(callback: CallbackQuery,
 
 
 @employment_router.callback_query(F.data == 'no_questions_pressed')
-async def respond_rejection_2(callabck: CallbackQuery,
-                              session_maker: sessionmaker):
-    await update_status(callabck.from_user.id, 'Соискатель',
+async def respond_rejection(callback: CallbackQuery,
+                            session_maker: sessionmaker):
+    await update_status(callback.from_user.id, 'Соискатель',
                         session_maker=session_maker)
-    await callabck.message.edit_text(text='Отлично! В течении 3-х рабочих '
-                                     'дней с вами свяжется менеджер и '
-                                     'назначит дату собеседования',
+    audio1 = FSInputFile('tgbot/audio/здравствуйте меня зовут.m4a')
+    audio2 = FSInputFile('tgbot/audio/смотрите сейчас нам.m4a')
+    audio3 = FSInputFile('tgbot/audio/прошу обратить внимание.m4a')
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.edit_text('Контакты менеджера: @GroupSwit',
                                      reply_markup=back_menu_kb)
 
 
@@ -205,5 +229,17 @@ async def answer_question_2(message: Message, state: FSMContext,
     await message.answer(text='Я передам ваш вопрос менеджеру, он свяжется с '
                          'вами в течении 3-х рабочих дней и даст ответ на '
                          'этот и другие вопросы.',
-                         reply_markup=back_menu_kb)
+                         reply_markup=manager_kb)
     await state.clear()
+
+
+@employment_router.callback_query(F.data == 'manager_pressed')
+async def send_audio(callback: CallbackQuery):
+    audio1 = FSInputFile('tgbot/audio/здравствуйте меня зовут.m4a')
+    audio2 = FSInputFile('tgbot/audio/смотрите сейчас нам.m4a')
+    audio3 = FSInputFile('tgbot/audio/прошу обратить внимание.m4a')
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.answer('Контакты менеджера: @GroupSwit',
+                                  reply_markup=back_menu_kb)

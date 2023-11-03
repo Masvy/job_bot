@@ -1,10 +1,10 @@
-from aiogram import Router, F, types
+from aiogram import Router, F, types, Bot
 from aiogram.filters import CommandStart
 from sqlalchemy.orm import sessionmaker
 
 from lexiocon.user_lexicon import USERS
 from keyboards.user_keyboards import main_menu_kb_1, main_menu_kb_2, \
-                                     main_menu_kb_3
+    main_menu_kb_3
 from database.users import read_access
 
 start_router: Router = Router()
@@ -13,7 +13,10 @@ start_router: Router = Router()
 @start_router.callback_query(F.data == 'back_menu_pressed')
 @start_router.message(CommandStart())
 async def start_bot(update: types.update,
-                    session_maker: sessionmaker):
+                    session_maker: sessionmaker,
+                    bot: Bot):
+    stat = await bot.get_chat_member(chat_id='-1001915063382', user_id=update.from_user.id)
+    print(f'rwe rwerew {stat}')
     access = await read_access(update.from_user.id,
                                session_maker=session_maker)
     if access == 0:

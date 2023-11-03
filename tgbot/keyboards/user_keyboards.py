@@ -90,7 +90,9 @@ vacancies_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
         [InlineKeyboardButton(text=KEYBOARDS['salesman-cashier'],
                               callback_data='Продавец-кассир')],
         [InlineKeyboardButton(text=KEYBOARDS['handyman'],
-                              callback_data='Разнорабочий')]
+                              callback_data='Разнорабочий')],
+        [InlineKeyboardButton(text=KEYBOARDS['administrator'],
+                              callback_data='Администратор')]
     ]
 )
 
@@ -200,6 +202,15 @@ questions_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
                                  callback_data='questions_pressed'),
             InlineKeyboardButton(text=KEYBOARDS['no'],
                                  callback_data='no_questions_pressed')
+        ]
+    ]
+)
+
+manager_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['manager'],
+                                 callback_data='manager_pressed'),
         ]
     ]
 )

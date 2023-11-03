@@ -8,9 +8,9 @@ from aiogram import Bot, Dispatcher
 
 from handlers import routers_list
 from database.create_table import BaseModel
-from middlewares.check_register import RegisterCheck
+from middlewares import check_register
 from database.engine import create_async_engine, get_session_maker, \
-                            proceed_schemas
+    proceed_schemas
 from keyboards.set_menu import set_main_menu
 
 
@@ -53,8 +53,8 @@ async def main():
 
     await set_main_menu(bot)
 
-    dp.message.middleware(RegisterCheck())
-    dp.callback_query.middleware(RegisterCheck())
+    dp.message.middleware(check_register.RegisterCheck())
+    dp.callback_query.middleware(check_register.RegisterCheck())
 
     dp.include_routers(*routers_list)
 
