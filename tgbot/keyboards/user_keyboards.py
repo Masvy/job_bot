@@ -10,6 +10,19 @@ main_menu_kb_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
+
+main_menu_kb_4: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text='О компании',
+                              callback_data='company_pressed')],
+        [InlineKeyboardButton(text='Актуальные вакансии',
+                              callback_data='vacancies_pressed')],
+        [InlineKeyboardButton(text='Трудоустройство',
+                              callback_data='employment_pressed')],
+    ]
+)
+
+
 main_menu_kb_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['about_company'],
@@ -59,13 +72,35 @@ yes_or_no_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-true_false_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+true_false_kb1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=KEYBOARDS['all_right'],
-                                 callback_data='all_right_pressed'),
+                                 callback_data='all_right_pressed1'),
             InlineKeyboardButton(text=KEYBOARDS['correct'],
-                                 callback_data='correct_pressed')
+                                 callback_data='correct_pressed1')
+        ]
+    ]
+)
+
+true_false_kb2: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['all_right'],
+                                 callback_data='all_right_pressed2'),
+            InlineKeyboardButton(text=KEYBOARDS['correct'],
+                                 callback_data='correct_pressed2')
+        ]
+    ]
+)
+
+true_false_kb3: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['all_right'],
+                                 callback_data='all_right_pressed3'),
+            InlineKeyboardButton(text=KEYBOARDS['correct'],
+                                 callback_data='correct_pressed3')
         ]
     ]
 )
@@ -81,116 +116,179 @@ company_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-vacancies_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+vacancies_kb1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['driver'],
-                              callback_data='Водитель')],
+                              callback_data='driver1')],
         [InlineKeyboardButton(text=KEYBOARDS['sales_manager'],
-                              callback_data='Менеджер по продажам')],
+                              callback_data='sales_manager1')],
         [InlineKeyboardButton(text=KEYBOARDS['salesman-cashier'],
-                              callback_data='Продавец-кассир')],
+                              callback_data='salesman_cashier1')],
         [InlineKeyboardButton(text=KEYBOARDS['handyman'],
-                              callback_data='Разнорабочий')],
+                              callback_data='handyman1')],
         [InlineKeyboardButton(text=KEYBOARDS['administrator'],
-                              callback_data='Администратор')]
+                              callback_data='administrator1')]
     ]
 )
 
-employments_kb_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
+vacancies_kb2: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text=KEYBOARDS['driver'],
+                              callback_data='driver2')],
+        [InlineKeyboardButton(text=KEYBOARDS['sales_manager'],
+                              callback_data='sales_manager2')],
+        [InlineKeyboardButton(text=KEYBOARDS['salesman-cashier'],
+                              callback_data='salesman_cashier2')],
+        [InlineKeyboardButton(text=KEYBOARDS['handyman'],
+                              callback_data='handyman2')],
+        [InlineKeyboardButton(text=KEYBOARDS['administrator'],
+                              callback_data='administrator2')]
+    ]
+)
+
+vacancies_kb3: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text=KEYBOARDS['driver'],
+                              callback_data='driver3')],
+        [InlineKeyboardButton(text=KEYBOARDS['sales_manager'],
+                              callback_data='sales_manager3')],
+        [InlineKeyboardButton(text=KEYBOARDS['salesman-cashier'],
+                              callback_data='salesman_cashier3')],
+        [InlineKeyboardButton(text=KEYBOARDS['handyman'],
+                              callback_data='handyman3')],
+        [InlineKeyboardButton(text=KEYBOARDS['administrator'],
+                              callback_data='administrator3')]
+    ]
+)
+
+employments_comp_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
-                              callback_data='Полная занятость')],
+                              callback_data='full_employment_comp')],
         [InlineKeyboardButton(text=KEYBOARDS['part-time_employment'],
-                              callback_data='Частичная занятость')],
+                              callback_data='part-time_employment_comp')],
         [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
-                              callback_data='Подработка')]
+                              callback_data='part-time_job_comp')]
     ]
 )
 
-employments_kb_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_comp_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
-                              callback_data='Полная занятость')],
+                              callback_data='full_employment_comp')],
         [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
-                              callback_data='Подработка')]
+                              callback_data='part-time_job_comp')]
     ]
 )
 
-schedule_1_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_vac_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['2/2'],
-                                 callback_data='2/2'),
-            InlineKeyboardButton(text=KEYBOARDS['3/3'],
-                                 callback_data='3/3'),
-            InlineKeyboardButton(text=KEYBOARDS['5/2'],
-                                 callback_data='5/2')
-        ]
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='full_employment_vac')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_employment'],
+                              callback_data='part-time_employment_vac')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='part-time_job_vac')]
     ]
 )
 
-schedule_2_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_vac_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['3-4'],
-                                 callback_data='3-4'),
-            InlineKeyboardButton(text=KEYBOARDS['5-6'],
-                                 callback_data='5-6')
-        ]
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='full_employment_vac')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='part-time_job_vac')]
     ]
 )
 
-schedule_3_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_emp_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['1-2'],
-                                 callback_data='1-2'),
-            InlineKeyboardButton(text=KEYBOARDS['3-4'],
-                                 callback_data='3-4')
-        ]
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='full_employment_emp')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_employment'],
+                              callback_data='part-time_employment_emp')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='part-time_job_emp')]
     ]
 )
 
-schedule_4_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+employments_emp_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['2/2'],
-                                 callback_data='2/2'),
-            InlineKeyboardButton(text=KEYBOARDS['5/2'],
-                                 callback_data='5/2')
-        ]
+        [InlineKeyboardButton(text=KEYBOARDS['full_employment'],
+                              callback_data='full_employment_emp')],
+        [InlineKeyboardButton(text=KEYBOARDS['part-time_job'],
+                              callback_data='part-time_job_emp')]
     ]
 )
 
-schedule_5_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text=KEYBOARDS['2-4'],
-                                 callback_data='2-4')
-        ]
-    ]
-)
-
-experience_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+experience_com: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=KEYBOARDS['yes'],
-                                 callback_data='Да'),
+                                 callback_data='yes1'),
             InlineKeyboardButton(text=KEYBOARDS['no'],
-                                 callback_data='Нет')
+                                 callback_data='no1')
         ]
     ]
 )
 
-education_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+experience_vac: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='yes2'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='no2')
+        ]
+    ]
+)
+
+experience_emp: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='yes3'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='no3')
+        ]
+    ]
+)
+
+education_com: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=KEYBOARDS['general'],
-                                 callback_data='Общее'),
+                                 callback_data='general1'),
             InlineKeyboardButton(text=KEYBOARDS['middle'],
-                                 callback_data='Среднее'),
+                                 callback_data='middle1'),
             InlineKeyboardButton(text=KEYBOARDS['high'],
-                                 callback_data='Высшее')
+                                 callback_data='high1')
+        ]
+    ]
+)
+
+education_vac: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['general'],
+                                 callback_data='general2'),
+            InlineKeyboardButton(text=KEYBOARDS['middle'],
+                                 callback_data='middle2'),
+            InlineKeyboardButton(text=KEYBOARDS['high'],
+                                 callback_data='high2')
+        ]
+    ]
+)
+
+education_emp: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['general'],
+                                 callback_data='general3'),
+            InlineKeyboardButton(text=KEYBOARDS['middle'],
+                                 callback_data='middle3'),
+            InlineKeyboardButton(text=KEYBOARDS['high'],
+                                 callback_data='high3')
         ]
     ]
 )
