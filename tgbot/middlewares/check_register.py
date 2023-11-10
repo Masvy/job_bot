@@ -1,6 +1,6 @@
 from typing import Any, Awaitable, Callable, Dict, Union
 
-from aiogram import BaseMiddleware
+from aiogram import BaseMiddleware, types
 from aiogram.types import Message, CallbackQuery
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
@@ -32,9 +32,14 @@ class RegisterCheck(BaseMiddleware):
                         )
                         await session.merge(user)
                 else:
-                    await event.answer('Для продолжения вы должны '
-                                       'подписаться на канал: @Kanzoboz',
-                                       show_alert=True)
+                    if isinstance(event, types.CallbackQuery):
+                        await event.message.answer(text='Для продолжения вы должны '
+                                                   'подписаться на канал: '
+                                                   '@Kanzoboz')
+                    else:
+                        await event.answer(text='Для продолжения вы должны '
+                                                'подписаться на канал: '
+                                                '@Kanzoboz')
                     return
 
         return await handler(event, data)
