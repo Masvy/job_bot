@@ -11,7 +11,7 @@ class User(BaseModel):
 
     user_name = Column(VARCHAR(50), unique=True, nullable=True)
 
-    city = Column(VARCHAR(20), unique=False, nullable=True)
+    city = Column(VARCHAR(30), unique=False, nullable=True)
 
     vacancies = Column(VARCHAR(30), unique=False, nullable=True)
 
@@ -19,7 +19,7 @@ class User(BaseModel):
 
     schedule = Column(VARCHAR(20), unique=False, nullable=True)
 
-    name = Column(VARCHAR(50), unique=False, nullable=True)
+    name = Column(VARCHAR(60), unique=False, nullable=True)
 
     age = Column(INTEGER, unique=False, nullable=True)
 
