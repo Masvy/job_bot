@@ -5,6 +5,7 @@ from environs import Env
 from sqlalchemy import URL
 import betterlogging as bl
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 
 from handlers import routers_list
 from database.create_table import BaseModel
@@ -34,22 +35,25 @@ def setup_logging():
 
 
 async def main():
-    '''
+    """
     Функция конфигурирования и запуска бота
 
     Создал объекты бота и диспетчера
     Зарегистрировал роутеры в диспетчере
     Создал url для соединения с базой
     Пропускаем накопившиеся апдейты и запускаем polling
-    '''
+    """
     setup_logging()
+
+    storage: RedisStorage = RedisStorage.from_url(url='redis://localhost:6379/0',
+                                                  key_builder=DefaultKeyBuilder(with_bot_id=True))
 
     env = Env()
     env.read_env()
 
     bot: Bot = Bot(token=env('BOT_TOKEN'),
                    parse_mode='HTML')
-    dp: Dispatcher = Dispatcher()
+    dp: Dispatcher = Dispatcher(storage=storage)
 
     await set_main_menu(bot)
 
