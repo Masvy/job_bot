@@ -7,10 +7,10 @@ from sqlalchemy.orm import sessionmaker
 from lexiocon.admin_lexicon import ADMIN
 from filters.admin_filters import IsAdmin
 from keyboards.admin_keyboards import admin_menu_kb, category_kb, \
-    manipuations_kb_1, \
-    function, function2, \
-    MyCallbackFactory, manipuations_kb_2, \
-    manipuations_kb_3
+    manipulations_kb_1, \
+    function, function2, function3, \
+    MyCallbackFactory, manipulations_kb_2, \
+    manipulations_kb_3
 from database.users import update_status
 from database.admin import number_applicants, applicants_name, \
     applicants_city, applicants_vacancies, \
@@ -29,7 +29,7 @@ from database.admin import number_applicants, applicants_name, \
     leads_schedule, \
     leads_age, leads_experience, leads_education, \
     number_registered, leads_user_name, satisfied_user_name, \
-    applicants_user_name
+    applicants_user_name, leads_id, number_remote
 
 admin_router: Router = Router()
 
@@ -41,7 +41,7 @@ env.read_env()
 @admin_router.message(and_f(Command(commands=['admin'])),
                       IsAdmin(env('ADMIN_IDS')))
 async def open_admin(update: types.update):
-    '''Этот хендлер реагирует на команду /admin'''
+    """Этот обработчик реагирует на команду /admin"""
     if isinstance(update, types.CallbackQuery):
         await update.message.edit_text(text=ADMIN['greetings'],
                                        reply_markup=admin_menu_kb)
@@ -53,22 +53,24 @@ async def open_admin(update: types.update):
 @admin_router.callback_query(F.data == 'statistics_pressed')
 async def open_statistics(callback: CallbackQuery,
                           session_maker: sessionmaker):
-    '''Этот хендлер реагирует на кнопку Статистика'''
+    """Этот обработчик реагирует на кнопку Статистика"""
     users = await number_registered(session_maker=session_maker)
     applicants = await number_applicants(session_maker=session_maker)
     satisfied = await number_satisfied(session_maker=session_maker)
     leads = await number_leads(session_maker=session_maker)
+    remote = await number_remote(session_maker=session_maker)
     await callback.message.edit_text(text='Количество пользователей: '
                                      f'{users}\nКоличество соискателей: '
                                      f'{applicants}\nКоличество тех, кого '
                                      f'устроило предложение: {satisfied}\n'
-                                     f'Количество лидов: {leads}',
-                                     reply_markup=manipuations_kb_3)
+                                     f'Количество лидов: {leads}\nКоличество '
+                                     f'удаленных: {remote}',
+                                     reply_markup=manipulations_kb_3)
 
 
 @admin_router.callback_query(F.data == 'applications_pressed')
 async def choose_category(callback: CallbackQuery):
-    '''Этот хендлер реагирует на кнопку Просмотреть заявки'''
+    """Этот обработчик реагирует на кнопку: Просмотреть заявки"""
     await callback.message.edit_text(text=ADMIN['select_category'],
                                      reply_markup=category_kb)
 
@@ -77,7 +79,7 @@ async def choose_category(callback: CallbackQuery):
                                   F.data == 'update_pressed'))
 async def show_applicants(callback: CallbackQuery,
                           session_maker: sessionmaker):
-    '''Этот хендлер реагирует на кнопку В поисках работы'''
+    """Этот обработчик реагирует на кнопку В поисках работы"""
     await callback.message.edit_text(text=ADMIN['time'])
     applicants = await number_applicants(session_maker=session_maker)
     names = await applicants_name(session_maker=session_maker)
@@ -104,14 +106,14 @@ async def show_applicants(callback: CallbackQuery,
                                       f'Ссылка на пользователя: @{user_name[i]}',
                                       reply_markup=function(user_id[i]))
     await callback.message.answer(text='Список пользователей окончен',
-                                  reply_markup=manipuations_kb_1)
+                                  reply_markup=manipulations_kb_1)
 
 
 @admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 1))
 async def move_dissatisfied(callback: CallbackQuery,
                             session_maker: sessionmaker):
-    '''Этот хендлер реагирует на генерируемую callback_data'''
-    await update_status(int(callback.data[4:-2]), 'Не устраивает',
+    """Этот обработчик реагирует на генерируемую callback_data"""
+    await update_status(int(callback.data[4:-2]), status='Не устраивает',
                         session_maker=session_maker)
     await callback.message.edit_text(text=ADMIN['move_dissatisfied'])
 
@@ -119,8 +121,8 @@ async def move_dissatisfied(callback: CallbackQuery,
 @admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 2))
 async def move_suits(callback: CallbackQuery,
                      session_maker: sessionmaker):
-    'Этот хендлер реагирует на генерируемую callback_data'
-    await update_status(int(callback.data[4:-2]), 'Устраивает',
+    """Этот обработчик реагирует на генерируемую callback_data"""
+    await update_status(int(callback.data[4:-2]), status='Устраивает',
                         session_maker=session_maker)
     await callback.message.edit_text(text=ADMIN['move_suits'])
 
@@ -129,7 +131,7 @@ async def move_suits(callback: CallbackQuery,
                                   F.data == 'update_pressed_2'))
 async def show_satisfied(callback: CallbackQuery,
                          session_maker: sessionmaker):
-    'Этот хендлер реагирует на кнопку Устраивает предложение'
+    """Этот обработчик реагирует на кнопку: Устраивает предложение"""
     await callback.message.edit_text(text=ADMIN['time'])
     satisfied = await number_satisfied(session_maker=session_maker)
     names = await satisfied_name(session_maker=session_maker)
@@ -154,14 +156,23 @@ async def show_satisfied(callback: CallbackQuery,
                                       f'Ссылка на пользователя: @{user_name[i]}',
                                       reply_markup=function2(user_id[i]))
     await callback.message.answer(text='Список пользователей окончен',
-                                  reply_markup=manipuations_kb_2)
+                                  reply_markup=manipulations_kb_2)
 
 
 @admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 3))
+async def remove_satisfied(callback: CallbackQuery,
+                           session_maker: sessionmaker):
+    """Этот обработчик реагирует на генерируемую callback_data"""
+    await update_status(int(callback.data[4:-2]), status='Удален',
+                        session_maker=session_maker)
+    await callback.message.edit_text(text=ADMIN['deleted'])
+
+
+@admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 4))
 async def add_lead(callback: CallbackQuery,
                    session_maker: sessionmaker):
-    'Этот хендлер реагирует на генерируемую callback_data'
-    await update_status(int(callback.data[4:-2]), 'Лид',
+    """Этот обработчик реагирует на генерируемую callback_data"""
+    await update_status(int(callback.data[4:-2]), status='Лид',
                         session_maker=session_maker)
     await callback.message.edit_text(text=ADMIN['move_leads'])
 
@@ -169,7 +180,7 @@ async def add_lead(callback: CallbackQuery,
 @admin_router.callback_query(F.data == 'list_leads_pressed')
 async def show_leads(callback: CallbackQuery,
                      session_maker: sessionmaker):
-    'Этот хендлер реагирует на кнопку Список лидов'
+    """Этот обработчик реагирует на кнопку Список лидов"""
     await callback.message.edit_text(text=ADMIN['time'])
     leads = await number_leads(session_maker=session_maker)
     names = await leads_name(session_maker=session_maker)
@@ -177,6 +188,7 @@ async def show_leads(callback: CallbackQuery,
     city = await leads_city(session_maker=session_maker)
     vacancies = await leads_vacancies(session_maker=session_maker)
     employment = await leads_employment(session_maker=session_maker)
+    user_id = await leads_id(session_maker=session_maker)
     schedule = await leads_schedule(session_maker=session_maker)
     age = await leads_age(session_maker=session_maker)
     experience = await leads_experience(session_maker=session_maker)
@@ -190,6 +202,16 @@ async def show_leads(callback: CallbackQuery,
                                       f'{schedule[i]}\n'
                                       f'Опыт работы: {experience[i]}\n'
                                       f'Образование: {education[i]}\n'
-                                      f'Ссылка на пользователя: @{user_name[i]}')
+                                      f'Ссылка на пользователя: @{user_name[i]}',
+                                      reply_markup=function3(user_id[i]))
     await callback.message.answer(text='Список пользователей окончен',
-                                  reply_markup=manipuations_kb_3)
+                                  reply_markup=manipulations_kb_3)
+
+
+@admin_router.callback_query(MyCallbackFactory.filter(F.subcategory == 5))
+async def remove_lead(callback: CallbackQuery,
+                      session_maker: sessionmaker):
+    """Этот обработчик реагирует на генерируемую callback_data"""
+    await update_status(int(callback.data[4:-2]), status='Удален',
+                        session_maker=session_maker)
+    await callback.message.edit_text(text=ADMIN['deleted'])
