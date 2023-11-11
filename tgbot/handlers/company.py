@@ -10,19 +10,19 @@ from states.users_states import Company, QuestionsCompany
 from keyboards.user_keyboards import company_kb, vacancies_kb1, \
      employments_comp_1, experience_com, \
      education_com, back_menu_kb, \
-     questions_kb, employments_comp_2, manager_kb, true_false_kb1
+     questions_com, employments_comp_2, true_false_kb1
 from database.users import update_access, update_city, \
      update_vacancies, update_employment, \
      update_schedule, update_name, update_age, \
      update_experience, update_education, \
-     update_status, update_question
+     update_status, update_question, read_access
 
 company_router: Router = Router()
 
 
 @company_router.callback_query(F.data == 'company_pressed')
 async def show_company(callback: CallbackQuery):
-    """Этот хендлер реагирует на кнопку О компании"""
+    """Этот обработчик реагирует на кнопку О компании"""
     await callback.message.edit_text(text=USERS['company'])
     await callback.message.answer(text=USERS['jobs_in_city'],
                                   reply_markup=company_kb)
@@ -33,19 +33,24 @@ async def show_company(callback: CallbackQuery):
                                StateFilter(default_state))
 async def request_city1(callback: CallbackQuery,
                         state: FSMContext,):
-    """Этот хендлер реагирует на кнопку: Просмотреть вакансии"""
+    """Этот обработчик реагирует на кнопку: Просмотреть вакансии"""
     await callback.message.edit_text(text=USERS['city_input_2'])
     print(callback.message.text)
     await state.set_state(Company.city)
 
 
 @company_router.message(StateFilter(Company.city),
-                        lambda x: x.text.isalpha() and len(x.text) <= 30)
+                        lambda x: len(x.text) <= 30)
 async def show_vacancies(message: Message,
                          state: FSMContext):
     await state.update_data(city=message.text)
     await message.answer(text=USERS['interesting_vacancies'],
                          reply_markup=vacancies_kb1)
+
+
+@company_router.message(StateFilter(Company.city))
+async def wrong_cities1(message: Message):
+    await message.answer(text=USERS['wrong_city'])
 
 
 @company_router.callback_query(or_f(F.data == 'driver1',
@@ -55,7 +60,7 @@ async def show_vacancies(message: Message,
                                     F.data == 'administrator1'))
 async def show_description(callback: CallbackQuery,
                            state: FSMContext):
-    """Этот хендлер реагирует на кнопки Водитель/Менеджер по продажам"""
+    """Этот обработчик реагирует на кнопки Водитель/Менеджер по продажам"""
     if callback.data == 'driver1':
         await state.update_data(vacancies='Водитель')
         await callback.message.edit_text(text=VACANCIES['driver'])
@@ -89,7 +94,6 @@ async def show_description(callback: CallbackQuery,
                                     F.data == 'part-time_employment_comp',
                                     F.data == 'part-time_job_comp'))
 async def request_employment1(callback: CallbackQuery,
-                              session_maker: sessionmaker,
                               state: FSMContext):
     """
     Этот обработчик реагирует на кнопки Полная занятость/Частичная занятость/Подработка
@@ -136,7 +140,7 @@ async def request_age1(message: Message,
 
 
 @company_router.message(StateFilter(Company.name))
-async def incorrect_name(message: Message):
+async def wrong_name1(message: Message):
     await message.answer(text=USERS['wrong_name'])
 
 
@@ -217,19 +221,22 @@ async def request_question_3(callback: CallbackQuery,
                                        'трудовой договор/ГПХ и приступить к работе '
                                        'на следующий день.\n\nУ вас остались '
                                        'какие-нибудь вопросы?',
-                                  reply_markup=questions_kb)
+                                  reply_markup=questions_com)
     await state.clear()
 
 
-@company_router.callback_query(F.data == 'no_questions_pressed')
+@company_router.callback_query(F.data == 'no_questions1')
 async def respond_rejection(callback: CallbackQuery,
                             session_maker: sessionmaker):
-    await update_status(callback.from_user.id, 'Соискатель',
+    await update_status(callback.from_user.id, status='Соискатель',
                         session_maker=session_maker)
-    await update_access(callback.from_user.id, 1, session_maker=session_maker)
-    audio1 = 'CQACAgIAAxkBAAINw2VL291eFejY2098lcX8ufIVO9-PAAJHOwAC4KdYSl2absrsOcxCMwQ'
-    audio2 = 'CQACAgIAAxkBAAINx2VL3CQDS6jr9bwYRWeGg3Yjk93DAAJOOwAC4KdYSqxt1Pjo1WJBMwQ'
-    audio3 = 'CQACAgIAAxkBAAINxWVL3A4qba4pvTmzro82IdAgsa71AAJMOwAC4KdYSu3FuRIZnwmaMwQ'
+    access = await read_access(callback.from_user.id,
+                               session_maker=session_maker)
+    if access < 2:
+        await update_access(callback.from_user.id, access=1, session_maker=session_maker)
+    audio1 = 'CQACAgIAAxkBAAMGZU-jkgcUeohBWIATCkW3bRTd6jMAAls4AAIS0IBKlYX_d9vPDrkzBA'
+    audio2 = 'CQACAgIAAxkBAAMIZU-j_tmE5m7mM7NlVynCoHFMpTIAAmY4AAIS0IBKEXq1Od5m9lQzBA'
+    audio3 = 'CQACAgIAAxkBAAMKZU-kXbTai7GHxoysqCFCH1X-A-8AAmg4AAIS0IBK5ZbdOeV1gM4zBA'
     await callback.message.answer_audio(audio1)
     await callback.message.answer_audio(audio2)
     await callback.message.answer_audio(audio3)
@@ -237,36 +244,34 @@ async def respond_rejection(callback: CallbackQuery,
                                   reply_markup=back_menu_kb)
 
 
-@company_router.callback_query(F.data == 'questions_pressed',
+@company_router.callback_query(F.data == 'questions1',
                                StateFilter(default_state))
 async def respond_consent(callback: CallbackQuery,
                           state: FSMContext):
-    await callback.message.edit_text(text='Хорошо, можете задать ваш вопрос:')
+    audio1 = 'CQACAgIAAxkBAAMGZU-jkgcUeohBWIATCkW3bRTd6jMAAls4AAIS0IBKlYX_d9vPDrkzBA'
+    audio2 = 'CQACAgIAAxkBAAMIZU-j_tmE5m7mM7NlVynCoHFMpTIAAmY4AAIS0IBKEXq1Od5m9lQzBA'
+    audio3 = 'CQACAgIAAxkBAAMKZU-kXbTai7GHxoysqCFCH1X-A-8AAmg4AAIS0IBK5ZbdOeV1gM4zBA'
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.answer(text='Хорошо, можете задать ваш вопрос:')
     await state.set_state(QuestionsCompany.question)
 
 
 @company_router.message(StateFilter(QuestionsCompany.question))
 async def answer_question(message: Message, state: FSMContext,
                           session_maker: sessionmaker):
-    await update_access(message.from_user.id, 1, session_maker=session_maker)
+    await state.clear()
+    access = await read_access(message.from_user.id,
+                               session_maker=session_maker)
+    if access < 2:
+        await update_access(message.from_user.id, access=1, session_maker=session_maker)
     await update_question(message.from_user.id, message.text,
                           session_maker=session_maker)
-    await update_status(message.from_user.id, 'Соискатель',
+    await update_status(message.from_user.id, status='Соискатель',
                         session_maker=session_maker)
+    await message.answer(text='Контакты менеджера: @Kanzobozz')
     await message.answer(text='Я передам ваш вопрос менеджеру, он свяжется с '
                          'вами в течении 3-х рабочих дней и даст ответ на '
                          'этот и другие вопросы.',
-                         reply_markup=manager_kb)
-    await state.clear()
-
-
-@company_router.callback_query(F.data == 'manager_pressed')
-async def send_audio(callback: CallbackQuery):
-    audio1 = 'CQACAgIAAxkBAAINw2VL291eFejY2098lcX8ufIVO9-PAAJHOwAC4KdYSl2absrsOcxCMwQ'
-    audio2 = 'CQACAgIAAxkBAAINx2VL3CQDS6jr9bwYRWeGg3Yjk93DAAJOOwAC4KdYSqxt1Pjo1WJBMwQ'
-    audio3 = 'CQACAgIAAxkBAAINxWVL3A4qba4pvTmzro82IdAgsa71AAJMOwAC4KdYSu3FuRIZnwmaMwQ'
-    await callback.message.answer_audio(audio1)
-    await callback.message.answer_audio(audio2)
-    await callback.message.answer_audio(audio3)
-    await callback.message.answer(text='Контакты менеджера: @GroupSwit',
-                                  reply_markup=back_menu_kb)
+                         reply_markup=back_menu_kb)

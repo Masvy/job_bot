@@ -10,11 +10,11 @@ from states.users_states import Employments, QuestionsEmployments
 from keyboards.user_keyboards import company_kb, vacancies_kb3, \
     employments_emp_1, experience_emp, \
     education_emp, back_menu_kb, \
-    questions_kb, employments_emp_2, manager_kb, true_false_kb3
+    questions_emp, employments_emp_2, true_false_kb3
 from database.users import update_city, update_vacancies, update_employment, \
      update_schedule, update_name, update_age, \
      update_experience, update_education, \
-     update_status, update_question, update_access
+     update_status, update_question
 
 employment_router: Router = Router()
 
@@ -34,7 +34,8 @@ async def request_city_3(callback: CallbackQuery,
     await state.set_state(Employments.city)
 
 
-@employment_router.message(StateFilter(Employments.city))
+@employment_router.message(StateFilter(Employments.city),
+                           lambda x: len(x.text) <= 30)
 async def show_vacancies_3(message: Message,
                            state: FSMContext,
                            session_maker: sessionmaker):
@@ -44,6 +45,11 @@ async def show_vacancies_3(message: Message,
     await message.answer(text=USERS['interesting_vacancies'],
                          reply_markup=vacancies_kb3)
     await state.clear()
+
+
+@employment_router.message(StateFilter(Employments.city))
+async def wrong_cities3(message: Message):
+    await message.answer(text=USERS['wrong_city'])
 
 
 @employment_router.callback_query(or_f(F.data == 'driver3',
@@ -57,21 +63,21 @@ async def show_description3(callback: CallbackQuery,
     """Этот хендлер реагирует на кнопки Водитель/Менеджер по продажам"""
     if callback.data == 'driver3':
         await state.update_data(vacancies='Водитель')
-        await update_vacancies(callback.from_user.id, 'Водитель',
+        await update_vacancies(callback.from_user.id, vacancies='Водитель',
                                session_maker=session_maker)
         await callback.message.edit_text(text=VACANCIES['driver'])
         await callback.message.answer(text=USERS['types_employment_1'],
                                       reply_markup=employments_emp_1)
     elif callback.data == 'sales_manager3':
         await state.update_data(vacancies='Менеджер по продажам')
-        await update_vacancies(callback.from_user.id, 'Менеджер по продажам',
+        await update_vacancies(callback.from_user.id, vacancies='Менеджер по продажам',
                                session_maker=session_maker)
         await callback.message.edit_text(text=VACANCIES['sales_manager'])
         await callback.message.answer(text=USERS['types_employment_2'],
                                       reply_markup=employments_emp_2)
     elif callback.data == 'salesman_cashier3':
         await state.update_data(vacancies='Продавец-кассир')
-        await update_vacancies(callback.from_user.id, 'Продавец-кассир',
+        await update_vacancies(callback.from_user.id, vacancies='Продавец-кассир',
                                session_maker=session_maker)
         await callback.message.edit_text(text=VACANCIES['salesman-cashier'])
         await callback.message.answer(text=USERS['types_employment_3'],
@@ -79,7 +85,7 @@ async def show_description3(callback: CallbackQuery,
 
     elif callback.data == 'handyman3':
         await state.update_data(vacancies='Разнорабочий')
-        await update_vacancies(callback.from_user.id, 'Разнорабочий',
+        await update_vacancies(callback.from_user.id, vacancies='Разнорабочий',
                                session_maker=session_maker)
         await callback.message.edit_text(text=VACANCIES['handyman'])
         await callback.message.answer(text=USERS['types_employment_4'],
@@ -87,7 +93,7 @@ async def show_description3(callback: CallbackQuery,
 
     elif callback.data == 'administrator3':
         await state.update_data(vacancies='Администратор')
-        await update_vacancies(callback.from_user.id, 'Администратор',
+        await update_vacancies(callback.from_user.id, vacancies='Администратор',
                                session_maker=session_maker)
         await callback.message.edit_text(text=VACANCIES['administrator'])
         await callback.message.answer(text=USERS['types_employment_4'],
@@ -105,21 +111,21 @@ async def request_employment3(callback: CallbackQuery,
     """
     if callback.data == 'full_employment_emp':
         await state.update_data(employment='Полная занятость')
-        await update_employment(callback.from_user.id, 'Полная занятость',
+        await update_employment(callback.from_user.id, employment='Полная занятость',
                                 session_maker=session_maker)
         await callback.message.answer(text='Какой график работы вас '
                                       'интересует?\n\nДля отмены '
                                       'анкетирования нажмите /cancel')
     elif callback.data == 'part-time_employment_emp':
         await state.update_data(employment='Частичная занятость')
-        await update_employment(callback.from_user.id, 'Частичная занятость',
+        await update_employment(callback.from_user.id, employment='Частичная занятость',
                                 session_maker=session_maker)
         await callback.message.answer(text='Сколько часов в день вы '
                                       'готовы уделять работе?\n\nДля отмены '
                                       'анкетирования нажмите /cancel')
     elif callback.data == 'part-time_job_emp':
         await state.update_data(employment='Подработка')
-        await update_employment(callback.from_user.id, 'Подработка',
+        await update_employment(callback.from_user.id, employment='Подработка',
                                 session_maker=session_maker)
         await callback.message.answer(text='Сколько часов в день вы '
                                       'готовы уделять работе?\n\nДля отмены '
@@ -185,11 +191,11 @@ async def request_education_3(callback: CallbackQuery,
                               session_maker: sessionmaker):
     if callback.data == 'yes3':
         await state.update_data(experience='Да')
-        await update_experience(callback.from_user.id, 'Да',
+        await update_experience(callback.from_user.id, experience='Да',
                                 session_maker=session_maker)
     elif callback.data == 'no3':
         await state.update_data(experience='Нет')
-        await update_experience(callback.from_user.id, 'Нет',
+        await update_experience(callback.from_user.id, experience='Нет',
                                 session_maker=session_maker)
     await callback.message.edit_text(text='Укажите уровень вашего '
                                      'образования:\n\nДля отмены '
@@ -246,19 +252,18 @@ async def request_question_2(callback: CallbackQuery,
                                        'трудовой договор/ГПХ и приступить к работе '
                                        'на следующий день.\n\nУ вас остались '
                                        'какие-нибудь вопросы?',
-                                  reply_markup=questions_kb)
+                                  reply_markup=questions_emp)
     await state.clear()
 
 
-@employment_router.callback_query(F.data == 'no_questions_pressed')
+@employment_router.callback_query(F.data == 'no_questions3')
 async def respond_rejection3(callback: CallbackQuery,
                              session_maker: sessionmaker):
-    await update_status(callback.from_user.id, 'Соискатель',
+    await update_status(callback.from_user.id, status='Соискатель',
                         session_maker=session_maker)
-    await update_access(callback.from_user.id, 3, session_maker=session_maker)
-    audio1 = 'CQACAgIAAxkBAAINw2VL291eFejY2098lcX8ufIVO9-PAAJHOwAC4KdYSl2absrsOcxCMwQ'
-    audio2 = 'CQACAgIAAxkBAAINx2VL3CQDS6jr9bwYRWeGg3Yjk93DAAJOOwAC4KdYSqxt1Pjo1WJBMwQ'
-    audio3 = 'CQACAgIAAxkBAAINxWVL3A4qba4pvTmzro82IdAgsa71AAJMOwAC4KdYSu3FuRIZnwmaMwQ'
+    audio1 = 'CQACAgIAAxkBAAMGZU-jkgcUeohBWIATCkW3bRTd6jMAAls4AAIS0IBKlYX_d9vPDrkzBA'
+    audio2 = 'CQACAgIAAxkBAAMIZU-j_tmE5m7mM7NlVynCoHFMpTIAAmY4AAIS0IBKEXq1Od5m9lQzBA'
+    audio3 = 'CQACAgIAAxkBAAMKZU-kXbTai7GHxoysqCFCH1X-A-8AAmg4AAIS0IBK5ZbdOeV1gM4zBA'
     await callback.message.answer_audio(audio1)
     await callback.message.answer_audio(audio2)
     await callback.message.answer_audio(audio3)
@@ -266,36 +271,30 @@ async def respond_rejection3(callback: CallbackQuery,
                                   reply_markup=back_menu_kb)
 
 
-@employment_router.callback_query(F.data == 'questions_pressed',
+@employment_router.callback_query(F.data == 'questions3',
                                   StateFilter(default_state))
 async def respond_consent_3(callback: CallbackQuery,
                             state: FSMContext):
-    await callback.message.edit_text(text='Хорошо, можете задать ваш вопрос:')
+    audio1 = 'CQACAgIAAxkBAAMGZU-jkgcUeohBWIATCkW3bRTd6jMAAls4AAIS0IBKlYX_d9vPDrkzBA'
+    audio2 = 'CQACAgIAAxkBAAMIZU-j_tmE5m7mM7NlVynCoHFMpTIAAmY4AAIS0IBKEXq1Od5m9lQzBA'
+    audio3 = 'CQACAgIAAxkBAAMKZU-kXbTai7GHxoysqCFCH1X-A-8AAmg4AAIS0IBK5ZbdOeV1gM4zBA'
+    await callback.message.answer_audio(audio1)
+    await callback.message.answer_audio(audio2)
+    await callback.message.answer_audio(audio3)
+    await callback.message.answer(text='Хорошо, можете задать ваш вопрос:')
     await state.set_state(QuestionsEmployments.question)
 
 
 @employment_router.message(StateFilter(QuestionsEmployments.question))
 async def answer_question3(message: Message, state: FSMContext,
                            session_maker: sessionmaker):
-    await update_access(message.from_user.id, 3, session_maker=session_maker)
+    await state.clear()
     await update_question(message.from_user.id, message.text,
                           session_maker=session_maker)
-    await update_status(message.from_user.id, 'Соискатель',
+    await update_status(message.from_user.id, status='Соискатель',
                         session_maker=session_maker)
+    await message.answer(text='Контакты менеджера: @Kanzobozz')
     await message.answer(text='Я передам ваш вопрос менеджеру, он свяжется с '
                          'вами в течении 3-х рабочих дней и даст ответ на '
                          'этот и другие вопросы.',
-                         reply_markup=manager_kb)
-    await state.clear()
-
-
-# @employment_router.callback_query(F.data == 'manager_pressed')
-# async def send_audio(callback: CallbackQuery):
-#     audio1 = 'CQACAgIAAxkBAAILnmVJElRpB6crdklSXQ3ifivgu2zLAAIkPAAC-MxJSq_nONffv6qDMwQ'
-#     audio2 = 'CQACAgIAAxkBAAILqWVJEt3HQBbyGd253sdjYScKysjTAAIqPAAC-MxJSvS8sRmUDLUdMwQ'
-#     audio3 = 'CQACAgIAAxkBAAILpWVJErrg081SYocGy38GYRPSWLsjAAInPAAC-MxJSrbSZFmaqzmgMwQ'
-#     await callback.message.answer_audio(audio1)
-#     await callback.message.answer_audio(audio2)
-#     await callback.message.answer_audio(audio3)
-#     await callback.message.answer(text='Контакты менеджера: @GroupSwit',
-#                                   reply_markup=back_menu_kb)
+                         reply_markup=back_menu_kb)
