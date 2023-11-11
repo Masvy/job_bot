@@ -10,19 +10,6 @@ main_menu_kb_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-
-main_menu_kb_4: InlineKeyboardMarkup = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text='О компании',
-                              callback_data='company_pressed')],
-        [InlineKeyboardButton(text='Актуальные вакансии',
-                              callback_data='vacancies_pressed')],
-        [InlineKeyboardButton(text='Трудоустройство',
-                              callback_data='employment_pressed')],
-    ]
-)
-
-
 main_menu_kb_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['about_company'],
@@ -293,22 +280,35 @@ education_emp: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-questions_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+questions_com: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text=KEYBOARDS['yes'],
-                                 callback_data='questions_pressed'),
+                                 callback_data='questions1'),
             InlineKeyboardButton(text=KEYBOARDS['no'],
-                                 callback_data='no_questions_pressed')
+                                 callback_data='no_questions1')
         ]
     ]
 )
 
-manager_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
+questions_vac: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text=KEYBOARDS['manager'],
-                                 callback_data='manager_pressed'),
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='questions2'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='no_questions2')
+        ]
+    ]
+)
+
+questions_emp: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text=KEYBOARDS['yes'],
+                                 callback_data='questions3'),
+            InlineKeyboardButton(text=KEYBOARDS['no'],
+                                 callback_data='no_questions3')
         ]
     ]
 )

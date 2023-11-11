@@ -30,7 +30,7 @@ category_kb: InlineKeyboardMarkup = InlineKeyboardMarkup(
     ]
 )
 
-manipuations_kb_1: InlineKeyboardButton = InlineKeyboardMarkup(
+manipulations_kb_1: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text='Обновить список',
@@ -41,7 +41,7 @@ manipuations_kb_1: InlineKeyboardButton = InlineKeyboardMarkup(
     ]
 )
 
-manipuations_kb_2: InlineKeyboardButton = InlineKeyboardMarkup(
+manipulations_kb_2: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text='Обновить список',
@@ -52,7 +52,7 @@ manipuations_kb_2: InlineKeyboardButton = InlineKeyboardMarkup(
     ]
 )
 
-manipuations_kb_3: InlineKeyboardMarkup = InlineKeyboardMarkup(
+manipulations_kb_3: InlineKeyboardMarkup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text=KEYBOARDS['back_menu'],
                               callback_data='back_menu_admin_pressed')]
@@ -86,10 +86,27 @@ def function2(user_id):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
+                InlineKeyboardButton(text='❌',
+                                     callback_data=MyCallbackFactory(
+                                         user_id=user_id,
+                                         subcategory=3).pack()),
                 InlineKeyboardButton(text=KEYBOARDS['send_leads'],
                                      callback_data=MyCallbackFactory(
                                      user_id=user_id,
-                                     subcategory=3).pack())
+                                     subcategory=4).pack())
+            ]
+        ]
+    )
+
+
+def function3(user_id):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='❌',
+                                     callback_data=MyCallbackFactory(
+                                         user_id=user_id,
+                                         subcategory=5).pack())
             ]
         ]
     )
