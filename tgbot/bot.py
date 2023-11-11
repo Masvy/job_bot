@@ -21,7 +21,7 @@ class ErrorFilter(logging.Filter):
 
 
 def setup_logging():
-    '''Функция конфигурации логирования'''
+    """Функция конфигурации логирования"""
     log_level = logging.INFO
     bl.basic_colorized_config(level=log_level)
 
