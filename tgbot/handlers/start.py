@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 
 from lexiocon.user_lexicon import USERS
 from keyboards.user_keyboards import main_menu_kb_1, main_menu_kb_2, \
-     main_menu_kb_3, main_menu_kb_4, back_menu_kb
+     main_menu_kb_3, back_menu_kb
 from database.users import read_access
 
 start_router: Router = Router()
@@ -18,13 +18,27 @@ async def start_bot(update: types.update,
                     session_maker: sessionmaker):
     access = await read_access(update.from_user.id,
                                session_maker=session_maker)
-    if isinstance(update, types.CallbackQuery):
-        await update.message.edit_text(text=USERS['main_manu'],
-                                       reply_markup=main_menu_kb_4)
-
-    elif isinstance(update, types.Message):
-        await update.answer(text=USERS['greetings'],
-                            reply_markup=main_menu_kb_4)
+    if access == 0:
+        if isinstance(update, types.CallbackQuery):
+            await update.message.answer(text=USERS['main_manu'],
+                                        reply_markup=main_menu_kb_1)
+        elif isinstance(update, types.Message):
+            await update.answer(text=USERS['greetings'],
+                                reply_markup=main_menu_kb_1)
+    elif access == 1:
+        if isinstance(update, types.CallbackQuery):
+            await update.message.answer(text=USERS['main_manu'],
+                                        reply_markup=main_menu_kb_2)
+        elif isinstance(update, types.Message):
+            await update.answer(text=USERS['greetings'],
+                                reply_markup=main_menu_kb_2)
+    else:
+        if isinstance(update, types.CallbackQuery):
+            await update.message.answer(text=USERS['main_manu'],
+                                        reply_markup=main_menu_kb_3)
+        elif isinstance(update, types.Message):
+            await update.answer(text=USERS['greetings'],
+                                reply_markup=main_menu_kb_3)
 
 
 @start_router.message(Command(commands='cancel'))
