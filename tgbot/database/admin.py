@@ -32,8 +32,8 @@ async def applicants_city(session_maker: sessionmaker):
     async with session_maker() as session:
         async with session.begin():
             result = await session.execute(select(User.city).where(User.status == 'Соискатель'))
-            citys = [row[0] for row in result]
-            return citys
+            cities = [row[0] for row in result]
+            return cities
 
 
 async def applicants_vacancies(session_maker: sessionmaker):
@@ -128,8 +128,8 @@ async def satisfied_city(session_maker: sessionmaker):
     async with session_maker() as session:
         async with session.begin():
             result = await session.execute(select(User.city).where(User.status == 'Устраивает'))
-            citys = [row[0] for row in result]
-            return citys
+            cities = [row[0] for row in result]
+            return cities
 
 
 async def satisfied_vacancies(session_maker: sessionmaker):
@@ -216,8 +216,8 @@ async def leads_city(session_maker: sessionmaker):
     async with session_maker() as session:
         async with session.begin():
             result = await session.execute(select(User.city).where(User.status == 'Лид'))
-            citys = [row[0] for row in result]
-            return citys
+            cities = [row[0] for row in result]
+            return cities
 
 
 async def leads_vacancies(session_maker: sessionmaker):
@@ -282,3 +282,11 @@ async def number_registered(session_maker: sessionmaker):
             result = await session.execute(func.count(User.user_id))
             users = result.scalar()
             return users
+
+
+async def number_remote(session_maker: sessionmaker):
+    async with session_maker() as session:
+        async with session.begin():
+            result = await session.execute(select(func.count()).where(User.status == 'Удален'))
+            remote = result.scalar()
+            return remote
